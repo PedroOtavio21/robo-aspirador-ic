@@ -1,0 +1,9 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Saidas brutas geradas (grandes e reproduziveis)
+experimentos/raw/*.csv
+experimentos/processed/

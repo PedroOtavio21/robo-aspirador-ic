@@ -1,0 +1,482 @@
+[
+  {
+    "config_id": 0,
+    "seed": 763641,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.43,
+    "densidade_obstaculo": 0.05,
+    "posicao_inicial": [
+      7,
+      2
+    ]
+  },
+  {
+    "config_id": 1,
+    "seed": 559081,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.3,
+    "densidade_obstaculo": 0.2,
+    "posicao_inicial": [
+      6,
+      4
+    ]
+  },
+  {
+    "config_id": 2,
+    "seed": 436074,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.41,
+    "densidade_obstaculo": 0.15,
+    "posicao_inicial": [
+      7,
+      5
+    ]
+  },
+  {
+    "config_id": 3,
+    "seed": 570250,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.48,
+    "densidade_obstaculo": 0.13,
+    "posicao_inicial": [
+      3,
+      4
+    ]
+  },
+  {
+    "config_id": 4,
+    "seed": 969588,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.48,
+    "densidade_obstaculo": 0.22,
+    "posicao_inicial": [
+      3,
+      7
+    ]
+  },
+  {
+    "config_id": 5,
+    "seed": 909599,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.36,
+    "densidade_obstaculo": 0.01,
+    "posicao_inicial": [
+      2,
+      3
+    ]
+  },
+  {
+    "config_id": 6,
+    "seed": 488513,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.25,
+    "densidade_obstaculo": 0.19,
+    "posicao_inicial": [
+      5,
+      6
+    ]
+  },
+  {
+    "config_id": 7,
+    "seed": 346897,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.34,
+    "densidade_obstaculo": 0.05,
+    "posicao_inicial": [
+      5,
+      6
+    ]
+  },
+  {
+    "config_id": 8,
+    "seed": 331827,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.43,
+    "densidade_obstaculo": 0.23,
+    "posicao_inicial": [
+      6,
+      6
+    ]
+  },
+  {
+    "config_id": 9,
+    "seed": 214425,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.22,
+    "densidade_obstaculo": 0.06,
+    "posicao_inicial": [
+      6,
+      3
+    ]
+  },
+  {
+    "config_id": 10,
+    "seed": 884955,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.4,
+    "densidade_obstaculo": 0.19,
+    "posicao_inicial": [
+      0,
+      4
+    ]
+  },
+  {
+    "config_id": 11,
+    "seed": 347213,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.54,
+    "densidade_obstaculo": 0.15,
+    "posicao_inicial": [
+      6,
+      1
+    ]
+  },
+  {
+    "config_id": 12,
+    "seed": 486817,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.35,
+    "densidade_obstaculo": 0.05,
+    "posicao_inicial": [
+      3,
+      3
+    ]
+  },
+  {
+    "config_id": 13,
+    "seed": 274657,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.35,
+    "densidade_obstaculo": 0.08,
+    "posicao_inicial": [
+      7,
+      2
+    ]
+  },
+  {
+    "config_id": 14,
+    "seed": 717304,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.48,
+    "densidade_obstaculo": 0.22,
+    "posicao_inicial": [
+      7,
+      2
+    ]
+  },
+  {
+    "config_id": 15,
+    "seed": 609245,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.47,
+    "densidade_obstaculo": 0.02,
+    "posicao_inicial": [
+      5,
+      3
+    ]
+  },
+  {
+    "config_id": 16,
+    "seed": 943582,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.26,
+    "densidade_obstaculo": 0.18,
+    "posicao_inicial": [
+      2,
+      0
+    ]
+  },
+  {
+    "config_id": 17,
+    "seed": 85395,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.28,
+    "densidade_obstaculo": 0.07,
+    "posicao_inicial": [
+      5,
+      3
+    ]
+  },
+  {
+    "config_id": 18,
+    "seed": 505462,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.41,
+    "densidade_obstaculo": 0.11,
+    "posicao_inicial": [
+      7,
+      4
+    ]
+  },
+  {
+    "config_id": 19,
+    "seed": 883666,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.23,
+    "densidade_obstaculo": 0.08,
+    "posicao_inicial": [
+      6,
+      3
+    ]
+  },
+  {
+    "config_id": 20,
+    "seed": 552929,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.24,
+    "densidade_obstaculo": 0.05,
+    "posicao_inicial": [
+      2,
+      4
+    ]
+  },
+  {
+    "config_id": 21,
+    "seed": 184674,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.41,
+    "densidade_obstaculo": 0.06,
+    "posicao_inicial": [
+      3,
+      6
+    ]
+  },
+  {
+    "config_id": 22,
+    "seed": 606978,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.56,
+    "densidade_obstaculo": 0.17,
+    "posicao_inicial": [
+      5,
+      0
+    ]
+  },
+  {
+    "config_id": 23,
+    "seed": 124310,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.29,
+    "densidade_obstaculo": 0.13,
+    "posicao_inicial": [
+      6,
+      1
+    ]
+  },
+  {
+    "config_id": 24,
+    "seed": 992425,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.4,
+    "densidade_obstaculo": 0.06,
+    "posicao_inicial": [
+      3,
+      1
+    ]
+  },
+  {
+    "config_id": 25,
+    "seed": 91005,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.25,
+    "densidade_obstaculo": 0.03,
+    "posicao_inicial": [
+      2,
+      2
+    ]
+  },
+  {
+    "config_id": 26,
+    "seed": 587238,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.27,
+    "densidade_obstaculo": 0.17,
+    "posicao_inicial": [
+      0,
+      1
+    ]
+  },
+  {
+    "config_id": 27,
+    "seed": 294609,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.21,
+    "densidade_obstaculo": 0.02,
+    "posicao_inicial": [
+      0,
+      1
+    ]
+  },
+  {
+    "config_id": 28,
+    "seed": 675861,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.28,
+    "densidade_obstaculo": 0.05,
+    "posicao_inicial": [
+      3,
+      3
+    ]
+  },
+  {
+    "config_id": 29,
+    "seed": 768185,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.38,
+    "densidade_obstaculo": 0.11,
+    "posicao_inicial": [
+      5,
+      4
+    ]
+  },
+  {
+    "config_id": 30,
+    "seed": 614812,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.55,
+    "densidade_obstaculo": 0.22,
+    "posicao_inicial": [
+      3,
+      6
+    ]
+  },
+  {
+    "config_id": 31,
+    "seed": 168167,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.32,
+    "densidade_obstaculo": 0.05,
+    "posicao_inicial": [
+      2,
+      3
+    ]
+  },
+  {
+    "config_id": 32,
+    "seed": 477447,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.47,
+    "densidade_obstaculo": 0.03,
+    "posicao_inicial": [
+      2,
+      5
+    ]
+  },
+  {
+    "config_id": 33,
+    "seed": 788646,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.4,
+    "densidade_obstaculo": 0.16,
+    "posicao_inicial": [
+      0,
+      3
+    ]
+  },
+  {
+    "config_id": 34,
+    "seed": 638074,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.39,
+    "densidade_obstaculo": 0.12,
+    "posicao_inicial": [
+      0,
+      3
+    ]
+  },
+  {
+    "config_id": 35,
+    "seed": 348172,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.2,
+    "densidade_obstaculo": 0.08,
+    "posicao_inicial": [
+      0,
+      6
+    ]
+  },
+  {
+    "config_id": 36,
+    "seed": 236033,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.44,
+    "densidade_obstaculo": 0.03,
+    "posicao_inicial": [
+      4,
+      2
+    ]
+  },
+  {
+    "config_id": 37,
+    "seed": 925696,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.25,
+    "densidade_obstaculo": 0.01,
+    "posicao_inicial": [
+      6,
+      1
+    ]
+  },
+  {
+    "config_id": 38,
+    "seed": 993261,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.57,
+    "densidade_obstaculo": 0.12,
+    "posicao_inicial": [
+      5,
+      4
+    ]
+  },
+  {
+    "config_id": 39,
+    "seed": 971105,
+    "largura": 8,
+    "altura": 8,
+    "densidade_sujeira": 0.37,
+    "densidade_obstaculo": 0.12,
+    "posicao_inicial": [
+      5,
+      7
+    ]
+  }
+]
