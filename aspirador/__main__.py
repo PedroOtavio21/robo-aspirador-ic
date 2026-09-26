@@ -1,21 +1,16 @@
-"""CLI da bateria de experimentos.
-
-Uso:
-    python -m experimentos [--configs 40] [--repeticoes 10] [--T 500] [--seed 2024]
-"""
-
 from __future__ import annotations
 
 import argparse
 
-from experimentos.executor import (
+from .experimentos import (
     REPETICOES_REATIVO_PADRAO,
     T_PADRAO,
+    TAMANHO_FIXO,
     executar_bateria,
+    gerar_configuracoes,
+    salvar_graficos,
     salvar_saidas,
 )
-from experimentos.gerador_config import TAMANHO_FIXO, gerar_configuracoes
-from experimentos.graficos import salvar_graficos
 
 
 def main() -> None:
@@ -37,7 +32,7 @@ def main() -> None:
     salvar_saidas(configs, df_resultados, df_historico)
     salvar_graficos(df_resultados, df_historico)
 
-    print("Saidas em experimentos/ (configs e raw) e resultados/ (tabelas e charts).")
+    print("Saidas em resultados/ (raw, tables e charts).")
     print(df_resultados.groupby("agente")[["score_a", "score_b"]].mean().round(2))
 
 

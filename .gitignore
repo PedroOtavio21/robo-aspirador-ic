@@ -5,5 +5,4 @@ __pycache__/
 .pytest_cache/
 
 # Saidas brutas geradas (grandes e reproduziveis)
-experimentos/raw/*.csv
-experimentos/processed/
+resultados/raw/*.csv

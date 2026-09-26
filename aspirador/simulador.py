@@ -1,22 +1,42 @@
-"""Simulador: liga Ambiente + Sensor + Agente + Atuadores e calcula as medidas.
-
-Ciclo de cada período (secao 9 do planejamento):
-    percepcao -> decisao do agente -> acao -> atualizacao do ambiente ->
-    calculo das medidas -> registro dos dados.
-
-Todos os agentes e experimentos executam exatamente T períodos (mesmo numero
-de periodos), condicao necessaria para comparar a Medida A com justiça.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from core import atuadores
-from core.agentes import Agente
-from core.ambiente import Ambiente
-from core.metricas import MedidaA, MedidaB
-from core.sensores import RAIO_PADRAO, Sensor
+from .agentes import Agente
+from .ambiente import RAIO_PADRAO, Ambiente, Sensor, aplicar
+
+
+@dataclass
+class Medida:
+    nome: str
+    total: float = 0.0
+    historico: list = field(default_factory=list)
+
+    def passo(self, quadrados_limpos: int, movimentos: int) -> None:
+        raise NotImplementedError
+
+    def media(self, n: int) -> float:
+        return self.total / n if n else 0.0
+
+
+class MedidaA(Medida):
+    def __init__(self) -> None:
+        super().__init__(nome="Medida A")
+
+    def passo(self, quadrados_limpos: int, movimentos: int) -> None:
+        self.total += quadrados_limpos
+        self.historico.append(self.total)
+
+
+class MedidaB(Medida):
+    def __init__(self) -> None:
+        super().__init__(nome="Medida B")
+        self.movimentos = 0
+
+    def passo(self, quadrados_limpos: int, movimentos: int) -> None:
+        self.movimentos += movimentos
+        self.total += quadrados_limpos - movimentos
+        self.historico.append(self.total)
 
 
 @dataclass
@@ -72,7 +92,7 @@ class Simulador:
 
         acao = self.agente.agir(self.percepcao)
         movimentos_antes = self.ambiente.movimentos
-        bateu = atuadores.aplicar(self.ambiente, acao)
+        bateu = aplicar(self.ambiente, acao)
         movimentos_delta = self.ambiente.movimentos - movimentos_antes
         self.percepcao = self.sensor.perceber(self.ambiente, bateu=bateu)
 
