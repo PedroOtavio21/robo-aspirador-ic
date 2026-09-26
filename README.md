@@ -6,8 +6,9 @@ Simulador do mundo do aspirador de pó com dois agentes — **reativo simples** 
 - **Medida A:** +1 ponto por quadrado limpo em cada período (acumulado).
 - **Medida B:** +1 ponto por quadrado limpo e −1 ponto por movimento.
 
-Stack: Python 3.11+ (apenas CLI, sem interface gráfica). Dependências:
-`matplotlib`, `pandas`, `pytest`.
+Stack: Python 3.11+, com execução por **CLI** e por **interface gráfica
+(Tkinter)**. Dependências: `matplotlib`, `pandas`, `pytest` (+ `python3-tk`
+como pacote de sistema para a interface).
 
 ## Documentos
 
@@ -40,16 +41,46 @@ A bateria gera:
   `curva_limpas.png`, `boxplot.png`;
 - `resultados/configuracoes.json` — configurações usadas.
 
+## Interface gráfica
+
+Pré-requisito de sistema (Ubuntu/Debian):
+
+```bash
+sudo apt install python3-tk
+```
+
+Abrir a GUI (qualquer uma das formas):
+
+```bash
+python main.py
+# ou
+python -m aspirador.gui
+```
+
+Na aba **Simulação** o usuário configura manualmente: **agente** (reativo
+simples / baseado em modelos), **seed**, **largura × altura**, **densidade de
+sujeira**, **densidade de obstáculos**, **posição inicial** (vazia = aleatória)
+e **T** (períodos). Os botões **Novo / Passo / Play-Pause** controlam a execução
+e o placar mostra passo, Medida A, Medida B, movimentos e status. Dois canvas
+exibem o **ambiente real** e o **mapa interno 0–4**. A aba **Resultados** embute
+os gráficos da bateria (lidos de `resultados/raw/`).
+
 ## Estrutura
 
 ```
 GUIA.md, PLANO.md, ARQUITETURA.md, README.md
+main.py             atalho da GUI (python main.py)
 aspirador/
   ambiente.py       Ambiente, Config, Acao, Sensor/Percepcao, aplicar()
   agentes.py        ReativoSimples, BaseadoEmModelo, EstadoInterno (0-4)
   simulador.py      MedidaA, MedidaB, Resultado, Simulador
   experimentos.py   configs, bateria, tabelas e graficos
   __main__.py       CLI (python -m aspirador)
+  gui/
+    janela.py             janela, controles e laço de simulação
+    widget_grade.py       canvas do ambiente e do mapa interno
+    widget_resultados.py  aba com gráficos da bateria
+    __main__.py           entrada da GUI
 tests/test_core.py
 resultados/         raw, tables, charts (gerados)
 docs/apresentacao.md

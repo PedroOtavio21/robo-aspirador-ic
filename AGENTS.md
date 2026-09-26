@@ -10,9 +10,11 @@
 
 ## Convenções
 
-- Python 3.11+; sem interface gráfica (a GUI não é exigida pelo guia).
+- Python 3.11+.
 - Núcleo em `aspirador/`: `ambiente.py`, `agentes.py`, `simulador.py`.
 - Experimentos em `aspirador/experimentos.py`; CLI em `python -m aspirador`.
+- Interface gráfica opcional em `aspirador/gui/` (Tkinter; requer `python3-tk`).
+  O núcleo não importa a GUI, então o pacote continua utilizável sem Tkinter.
 - Sem comentários no código, salvo quando solicitado.
 - Toda saída experimental é reproduzível por seed.
 
@@ -22,4 +24,6 @@
 pip install -r requirements.txt
 pytest -q
 python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
+sudo apt install python3-tk   # pré-requisito da interface
+python main.py                # interface gráfica
 ```

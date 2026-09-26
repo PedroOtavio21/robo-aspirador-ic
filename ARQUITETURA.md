@@ -17,6 +17,13 @@ aspirador/
   simulador.py       # MedidaA, MedidaB, Resultado, Simulador
   experimentos.py    # configs, bateria, tabelas, graficos, salvar
   __main__.py        # CLI
+  gui/
+    __init__.py
+    janela.py            # janela, controles e laço de simulação
+    widget_grade.py      # canvas: ambiente e mapa interno 0-4
+    widget_resultados.py # aba com gráficos da bateria
+    __main__.py          # python -m aspirador.gui
+main.py              # atalho da GUI: python main.py
 tests/
   test_core.py
 resultados/
@@ -37,6 +44,10 @@ docs/
   medidas de desempenho e o resultado consolidado.
 - **`experimentos.py`** — geração de configurações, execução da bateria,
   tabelas agregadas e gráficos.
+- **`gui/`** — interface Tkinter opcional que consome o núcleo; permite
+  configurar a simulação (agente, seed, tamanho, densidades, posição, T) e
+  acompanhá-la. Não é importada por `aspirador/__init__.py`, então o núcleo e a
+  CLI continuam funcionando sem Tkinter.
 
 ## 3. Contratos
 
