@@ -168,3 +168,42 @@ def test_modelo_nao_pior_que_reativo():
         Ambiente(8, 8, 0.4, 0.15, seed=123), AgenteReativoSimples(seed=123), T=500
     ).rodar()
     assert m.score_a >= r.score_a
+
+
+def test_t_fixo_mantem_passos_mesmo_limpo():
+    resultado = Simulador(
+        Ambiente(4, 4, 0.5, 0.0, seed=3),
+        AgenteBaseadoEmModelo(seed=3),
+        T=300,
+    ).rodar()
+    assert resultado.limpo is True
+    assert resultado.passos == 300
+    assert resultado.passos_ate_limpo is not None
+    assert resultado.passos_ate_limpo < 300
+    assert resultado.percentual_limpo == 100.0
+
+
+def test_parar_quando_limpo_encerra_antes_de_t():
+    resultado = Simulador(
+        Ambiente(4, 4, 0.5, 0.0, seed=3),
+        AgenteBaseadoEmModelo(seed=3),
+        T=300,
+        parar_quando_limpo=True,
+    ).rodar()
+    assert resultado.limpo is True
+    assert resultado.passos < 300
+    assert resultado.passos == resultado.passos_ate_limpo
+    assert resultado.movimentos_ate_limpo == resultado.movimentos
+
+
+def test_ambiente_sem_sujeira():
+    resultado = Simulador(
+        Ambiente(3, 3, 0.0, 0.0, seed=0),
+        AgenteBaseadoEmModelo(seed=0),
+        T=50,
+        parar_quando_limpo=True,
+    ).rodar()
+    assert resultado.passos == 0
+    assert resultado.passos_ate_limpo == 0
+    assert resultado.movimentos_ate_limpo == 0
+    assert resultado.percentual_limpo == 100.0

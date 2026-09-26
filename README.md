@@ -36,7 +36,8 @@ python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
 A bateria gera:
 
 - `resultados/raw/` — resultados brutos e histórico por período;
-- `resultados/tables/` — `por_config.csv` e `medias_globais.csv`;
+- `resultados/tables/` — `por_config.csv`, `medias_globais.csv` e
+  `eficiencia.csv`;
 - `resultados/charts/` — `graficos.png`, `barras_medidas.png`,
   `curva_limpas.png`, `boxplot.png`;
 - `resultados/configuracoes.json` — configurações usadas.
@@ -63,7 +64,9 @@ sujeira**, **densidade de obstáculos**, **posição inicial** (vazia = aleatór
 e **T** (períodos). Os botões **Novo / Passo / Play-Pause** controlam a execução
 e o placar mostra passo, Medida A, Medida B, movimentos e status. Dois canvas
 exibem o **ambiente real** e o **mapa interno 0–4**. A aba **Resultados** embute
-os gráficos da bateria (lidos de `resultados/raw/`).
+os gráficos da bateria (lidos de `resultados/raw/`). Há ainda a opção **"Parar
+quando limpo"**: com ela marcada, o episódio encerra assim que o ambiente fica
+sem sujeira (T permanece como teto de segurança).
 
 ## Estrutura
 
@@ -108,6 +111,23 @@ Matriz com origem no ponto de partida (capacidade máxima fixa):
 | 3 | passado e limpo |
 | 4 | barreira / obstáculo / limite |
 
+## Critério de parada
+
+Nos **experimentos** todos os agentes executam **exatamente T períodos** (T = 500
+por padrão). Isso é necessário para comparar a **Medida A**, que é uma soma ao
+longo do tempo: fixar T torna a recompensa de manutenção (permanecer limpo)
+comparável entre agentes. Se o episódio terminasse ao limpar, o agente rápido
+acumularia poucos pontos e o agente que nunca termina acumularia mais — o
+ranking poderia se inverter.
+
+Na **GUI** existe a opção **"Parar quando limpo"** (desligada por padrão), útil
+para observar o episódio terminar naturalmente; T continua como teto de
+segurança. O critério é aplicado pelo simulador, não é uma percepção do agente,
+portanto não afeta a observabilidade parcial.
+
+Métricas auxiliares (sem alterar A/B): **passos até limpar**, **movimentos até
+limpo** e **percentual de sujeira removida** (`resultados/tables/eficiencia.csv`).
+
 ## Resultados obtidos
 
 Bateria: 40 configurações, 8 × 8, T = 500, reativo com 10 repetições.
@@ -116,6 +136,15 @@ Bateria: 40 configurações, 8 × 8, T = 500, reativo com 10 repetições.
 |---|---:|---:|---:|---:|
 | Baseado em modelo | **28.436,05 ± 2.198,63** | **28.354,40 ± 2.198,06** | 81,7 | 100 % |
 | Reativo simples | 25.403,03 ± 2.938,47 | 24.922,76 ± 2.935,98 | 480,3 | 24,2 % |
+
+Eficiência (médias por execução):
+
+| Agente | Passos até limpar | Movimentos até limpo | Sujeira removida |
+|---|---:|---:|---:|
+| Baseado em modelo | 84,3 | 62,3 | 100 % |
+| Reativo simples | 376,1* | 357,2* | 90,0 % |
+
+\* média apenas entre as execuções em que o reativo terminou a limpeza (24,2 %).
 
 Análise completa em `docs/apresentacao.md`.
 

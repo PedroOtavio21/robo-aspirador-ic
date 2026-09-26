@@ -17,6 +17,8 @@
   O núcleo não importa a GUI, então o pacote continua utilizável sem Tkinter.
 - Sem comentários no código, salvo quando solicitado.
 - Toda saída experimental é reproduzível por seed.
+- Critério de parada: **T fixo** nos experimentos (para comparar a Medida A);
+  "parar quando limpo" é apenas uma opção da GUI, com T como teto.
 
 ## Comandos
 

@@ -48,6 +48,9 @@ class Resultado:
     celulas_limpas: int
     total_sujos: int
     limpo: bool
+    passos_ate_limpo: int | None = None
+    movimentos_ate_limpo: int | None = None
+    percentual_limpo: float = 0.0
     acoes: list = field(default_factory=list)
     historico_limpos: list = field(default_factory=list)
     historico_a: list = field(default_factory=list)
@@ -67,10 +70,12 @@ class Simulador:
         agente: Agente,
         T: int = 500,
         raio_sensor: int = RAIO_PADRAO,
+        parar_quando_limpo: bool = False,
     ) -> None:
         self.ambiente = ambiente
         self.agente = agente
         self.T = T
+        self.parar_quando_limpo = parar_quando_limpo
         self.sensor = Sensor(raio_sensor)
         self.reset()
 
@@ -85,6 +90,13 @@ class Simulador:
         self.acoes: list[str] = []
         self.historico_limpos: list[int] = []
         self.terminado = False
+        self.passos_ate_limpo: int | None = None
+        self.movimentos_ate_limpo: int | None = None
+        if self.ambiente.limpo():
+            self.passos_ate_limpo = 0
+            self.movimentos_ate_limpo = 0
+            if self.parar_quando_limpo:
+                self.terminado = True
 
     def passo(self) -> None:
         if self.terminado:
@@ -103,10 +115,20 @@ class Simulador:
         self.medida_b.passo(limpos, movimentos_delta)
         self.historico_limpos.append(self.ambiente.limpas)
 
-        if self.passos >= self.T:
+        if self.passos_ate_limpo is None and self.ambiente.limpo():
+            self.passos_ate_limpo = self.passos
+            self.movimentos_ate_limpo = self.ambiente.movimentos
+
+        if self.passos >= self.T or (
+            self.parar_quando_limpo and self.ambiente.limpo()
+        ):
             self.terminado = True
 
     def resultado(self) -> Resultado:
+        if self.ambiente.sujos_iniciais:
+            percentual = 100.0 * self.ambiente.limpas / self.ambiente.sujos_iniciais
+        else:
+            percentual = 100.0
         return Resultado(
             score_a=self.medida_a.total,
             score_b=self.medida_b.total,
@@ -115,6 +137,9 @@ class Simulador:
             celulas_limpas=self.ambiente.limpas,
             total_sujos=self.ambiente.sujos_iniciais,
             limpo=self.ambiente.limpo(),
+            passos_ate_limpo=self.passos_ate_limpo,
+            movimentos_ate_limpo=self.movimentos_ate_limpo,
+            percentual_limpo=percentual,
             acoes=list(self.acoes),
             historico_limpos=list(self.historico_limpos),
             historico_a=list(self.medida_a.historico),

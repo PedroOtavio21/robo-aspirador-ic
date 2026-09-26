@@ -90,6 +90,11 @@ class JanelaPrincipal(tk.Tk):
         self.botao_play = ttk.Button(barra, text="Play", command=self.alternar_play)
         self.botao_play.pack(side="left", padx=2)
 
+        self.var_parar_limpo = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            barra, text="Parar quando limpo", variable=self.var_parar_limpo
+        ).pack(side="left", padx=(16, 2))
+
         ttk.Label(barra, text="Velocidade:").pack(side="left", padx=(16, 4))
         self.escala = ttk.Scale(
             barra,
@@ -184,7 +189,12 @@ class JanelaPrincipal(tk.Tk):
 
         classe = AGENTES[self.combo_agente.get()]
         agente = classe(seed=seed)
-        self.simulador = Simulador(ambiente, agente, T=T)
+        self.simulador = Simulador(
+            ambiente,
+            agente,
+            T=T,
+            parar_quando_limpo=self.var_parar_limpo.get(),
+        )
         self._atualizar()
 
     def passo(self) -> None:
@@ -232,7 +242,10 @@ class JanelaPrincipal(tk.Tk):
 
         resultado = self.simulador.resultado()
         if self.simulador.terminado:
-            status = f"fim ({self.simulador.T} períodos)"
+            if self.simulador.parar_quando_limpo and resultado.limpo:
+                status = f"fim (limpo em {resultado.passos} passos)"
+            else:
+                status = f"fim ({self.simulador.T} períodos)"
         elif resultado.limpo:
             status = "ambiente limpo"
         else:

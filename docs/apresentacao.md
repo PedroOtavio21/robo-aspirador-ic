@@ -36,6 +36,14 @@ Em ambos os casos, as ações são aplicadas por `aspirador/ambiente.py`
   colide repetidamente. Consome ~**480 movimentos** e ficou limpo em **24,2 %**
   das configurações dentro de T = 500.
 
+### Critério de parada
+
+Nos experimentos, todos executam **exatamente T = 500 períodos**, o que torna a
+Medida A (soma dos quadrados limpos por período) comparável — a medida premia
+manter o ambiente limpo. Terminar ao limpar inverteria o ranking: o agente
+rápido acumularia poucos pontos e o agente que nunca limpa acumularia mais. Na
+GUI há a opção **"Parar quando limpo"** (desligada por padrão), com T como teto.
+
 ## 3. Resultados empíricos
 
 Bateria: 40 configurações, 8 × 8, T = 500, reativo com 10 repetições.
@@ -50,7 +58,17 @@ Bateria: 40 configurações, 8 × 8, T = 500, reativo com 10 repetições.
 | Baseado em modelo | 81,7 | 21,9 | 100 % |
 | Reativo simples | 480,3 | 19,7 | 24,2 % |
 
-Tabelas: `resultados/tables/medias_globais.csv` e `por_config.csv`.
+Eficiência (T fixo; médias por execução):
+
+| Agente | Passos até limpar | Movimentos até limpo | Sujeira removida |
+|---|---:|---:|---:|
+| Baseado em modelo | 84,3 | 62,3 | 100 % |
+| Reativo simples | 376,1* | 357,2* | 90,0 % |
+
+\* média apenas entre as execuções em que o reativo terminou a limpeza.
+
+Tabelas: `resultados/tables/medias_globais.csv`, `por_config.csv` e
+`eficiencia.csv`.
 Gráficos: `resultados/charts/` (`graficos.png`, `barras_medidas.png`,
 `curva_limpas.png`, `boxplot.png`).
 

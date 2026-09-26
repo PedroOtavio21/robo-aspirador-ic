@@ -37,8 +37,11 @@ sensores operam estritamente de forma local.
 
 - **Interface gráfica Tkinter** (`aspirador/gui/`) para configurar a simulação
   manualmente (agente, seed, tamanho, densidades, posição, T) e acompanhar
-  passo a passo. Entradas: `python -m aspirador.gui` e `python main.py`.
-  O núcleo permanece independente da GUI.
+  passo a passo, incluindo a opção **"Parar quando limpo"**. Entradas:
+  `python -m aspirador.gui` e `python main.py`. O núcleo permanece independente
+  da GUI.
+- **Métricas auxiliares** de eficiência (passos até limpar, movimentos até
+  limpo e percentual de sujeira removida), sem alterar as Medidas A/B.
 
 ## 4. Decisões de corte
 
@@ -48,6 +51,8 @@ sensores operam estritamente de forma local.
   documentos antigos são substituídos.
 - **Tamanho fixo 8 × 8** e **T = 500** períodos na bateria principal (a GUI
   permite outros valores manualmente).
+- **Critério de parada:** T fixo nos experimentos (comparabilidade da Medida A);
+  "parar quando limpo" apenas como opção da GUI, com T como teto.
 - **GUI opcional** — só a interface importa Tkinter; o restante roda sem ela.
 
 Fora de escopo: empacotamento publicável, execução paralela.

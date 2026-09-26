@@ -94,6 +94,9 @@ def rodar_configuracao(
                     "celulas_limpas": resultado.celulas_limpas,
                     "total_sujos": resultado.total_sujos,
                     "limpo": resultado.limpo,
+                    "passos_ate_limpo": resultado.passos_ate_limpo,
+                    "movimentos_ate_limpo": resultado.movimentos_ate_limpo,
+                    "percentual_limpo": resultado.percentual_limpo,
                     "acoes": " ".join(resultado.acoes),
                 }
             )
@@ -146,9 +149,34 @@ def medias_globais(df: pd.DataFrame) -> pd.DataFrame:
 def por_configuracao(df: pd.DataFrame) -> pd.DataFrame:
     return (
         df.groupby(["config_id", "agente"])[
-            ["score_a", "score_b", "movimentos", "celulas_limpas", "passos"]
+            [
+                "score_a",
+                "score_b",
+                "movimentos",
+                "celulas_limpas",
+                "passos",
+                "passos_ate_limpo",
+                "movimentos_ate_limpo",
+                "percentual_limpo",
+            ]
         ]
         .mean()
+        .reset_index()
+    )
+
+
+def resumo_eficiencia(df: pd.DataFrame) -> pd.DataFrame:
+    return (
+        df.groupby("agente")
+        .agg(
+            movimentos=("movimentos", "mean"),
+            passos=("passos", "mean"),
+            celulas_limpas=("celulas_limpas", "mean"),
+            percentual_limpo=("percentual_limpo", "mean"),
+            limpo=("limpo", "mean"),
+            passos_ate_limpo=("passos_ate_limpo", "mean"),
+            movimentos_ate_limpo=("movimentos_ate_limpo", "mean"),
+        )
         .reset_index()
     )
 
@@ -171,6 +199,9 @@ def salvar_saidas(
     )
     por_configuracao(df_resultados).to_csv(
         os.path.join(DIR_TABELAS, "por_config.csv"), index=False
+    )
+    resumo_eficiencia(df_resultados).to_csv(
+        os.path.join(DIR_TABELAS, "eficiencia.csv"), index=False
     )
 
 
