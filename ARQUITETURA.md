@@ -38,8 +38,9 @@ docs/
 - **`ambiente.py`** — estado real do mundo (grade `LIVRE/SUJO/OBSTACULO`),
   geração reprodutível por seed com flood fill, ações (`Acao`), aplicação das
   ações (`aplicar`), e o sensor local (`Sensor`/`Percepcao`).
-- **`agentes.py`** — o agente reativo simples e o baseado em modelos, além do
-  estado interno (matriz 0–4) do segundo.
+- **`agentes.py`** — o agente reativo simples e o baseado em modelos; este
+  último tem memória configurável: `mapa` (matriz 0–4 + BFS) ou `posicao`
+  (só a posição atual/anterior, sem mapa).
 - **`simulador.py`** — ciclo percepção → decisão → ação → medida, as duas
   medidas de desempenho (contando apenas células limpas **pelo agente**), o
   critério de parada (T fixo; opcionalmente encerrar quando limpo) e o resultado
@@ -59,6 +60,7 @@ Sensor.perceber(ambiente, bateu) -> Percepcao
 Agente.agir(percepcao)           -> Acao
 Agente.reset(seed)               -> None
 Agente.mapa_interno()            -> EstadoInterno | None
+AgenteBaseadoEmModelo(seed, memoria="mapa"|"posicao")
 aplicar(ambiente, acao)          -> bool (bateu)
 Simulador.rodar(T)               -> Resultado
 Simulador(T, parar_quando_limpo) -> encerra ao limpar (T como teto) se True

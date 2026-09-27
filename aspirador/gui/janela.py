@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from ..agentes import AGENTES
+from ..agentes import AGENTES, AgenteBaseadoEmModelo
 from ..ambiente import Ambiente
 from ..simulador import Simulador
 from .widget_grade import GradeCanvas
@@ -13,6 +13,7 @@ LARGURA_PADRAO, ALTURA_PADRAO = 8, 8
 DENSIDADE_SUJEIRA_PADRAO, DENSIDADE_OBSTACULO_PADRAO = 0.4, 0.15
 T_PADRAO = 500
 INTERVALO_PADRAO = 200
+MEMORIAS = {"Mapa (matriz)": "mapa", "Apenas 1 posição": "posicao"}
 
 
 class JanelaPrincipal(tk.Tk):
@@ -64,6 +65,16 @@ class JanelaPrincipal(tk.Tk):
         )
         self.combo_agente.current(0)
         self.combo_agente.grid(row=0, column=1, sticky="w", padx=(0, 12), pady=3)
+        self.combo_agente.bind("<<ComboboxSelected>>", self._atualizar_memoria)
+
+        ttk.Label(caixa, text="Memória:").grid(
+            row=0, column=4, sticky="e", padx=(6, 2), pady=3
+        )
+        self.combo_memoria = ttk.Combobox(
+            caixa, values=list(MEMORIAS), state="disabled", width=16
+        )
+        self.combo_memoria.current(0)
+        self.combo_memoria.grid(row=0, column=5, sticky="w", padx=(0, 12), pady=3)
 
         self.entrada_seed = self._par(caixa, 0, 2, "Seed:", 0)
         self.entrada_largura = self._par(caixa, 1, 0, "Largura:", LARGURA_PADRAO)
@@ -129,6 +140,12 @@ class JanelaPrincipal(tk.Tk):
         self.canvas_mapa = GradeCanvas(moldura_dir)
         self.canvas_mapa.pack()
 
+    def _atualizar_memoria(self, _evento=None) -> None:
+        if self.combo_agente.get() == AgenteBaseadoEmModelo.nome:
+            self.combo_memoria.config(state="readonly")
+        else:
+            self.combo_memoria.config(state="disabled")
+
     def _inteiro(self, entrada, padrao: int) -> int:
         try:
             return int(entrada.get().strip())
@@ -188,7 +205,10 @@ class JanelaPrincipal(tk.Tk):
             return
 
         classe = AGENTES[self.combo_agente.get()]
-        agente = classe(seed=seed)
+        if classe is AgenteBaseadoEmModelo:
+            agente = classe(seed=seed, memoria=MEMORIAS[self.combo_memoria.get()])
+        else:
+            agente = classe(seed=seed)
         self.simulador = Simulador(
             ambiente,
             agente,
@@ -238,7 +258,14 @@ class JanelaPrincipal(tk.Tk):
             return
         ambiente = self.simulador.ambiente
         self.canvas_ambiente.mostrar_ambiente(ambiente)
-        self.canvas_mapa.mostrar_mapa(self.simulador.agente.mapa_interno())
+        estado = self.simulador.agente.mapa_interno()
+        if estado is not None:
+            self.canvas_mapa.mostrar_mapa(estado)
+        else:
+            texto = self.simulador.agente.descricao_memoria()
+            self.canvas_mapa.mostrar_mensagem(
+                texto or "Este agente não mantém estado interno."
+            )
 
         resultado = self.simulador.resultado()
         if self.simulador.terminado:

@@ -9,6 +9,7 @@ from aspirador.agentes import (
 )
 from aspirador.agentes import SUJO as SUJO_INTERNO
 from aspirador.ambiente import (
+    DELTA,
     LIVRE,
     OBSTACULO,
     SUJO,
@@ -230,3 +231,38 @@ def test_score_a_soma_apenas_celulas_limpas_pelo_robo():
     assert resultado.score_a == sum(resultado.historico_limpos)
     assert resultado.score_b == resultado.score_a - resultado.movimentos
     assert resultado.score_a <= resultado.passos * resultado.total_sujos
+
+
+def test_memoria_posicao_nao_tem_mapa():
+    agente = AgenteBaseadoEmModelo(seed=0, memoria="posicao")
+    assert agente.mapa_interno() is None
+    agente.agir(Percepcao(False, False, (0, 0)))
+    assert "posição" in agente.descricao_memoria()
+
+
+def test_memoria_posicao_nao_retrocede():
+    agente = AgenteBaseadoEmModelo(seed=0, memoria="posicao")
+    agente.agir(Percepcao(False, False, (0, 0)))
+    acao = agente.agir(Percepcao(False, False, (0, 1)))
+    assert DELTA[acao] != (0, -1)
+
+
+def test_memoria_posicao_reprodutivel():
+    percepcoes = [Percepcao(False, False, (0, i)) for i in range(1, 10)]
+    a = AgenteBaseadoEmModelo(seed=7, memoria="posicao")
+    b = AgenteBaseadoEmModelo(seed=7, memoria="posicao")
+    assert [a.agir(p) for p in percepcoes] == [b.agir(p) for p in percepcoes]
+
+
+def test_rodar_configuracao_registra_memoria():
+    from aspirador.experimentos import gerar_configuracoes, rodar_configuracao
+
+    config = gerar_configuracoes(1, seed=1, tamanho=5)[0]
+    linhas, _ = rodar_configuracao(
+        config, repeticoes_reativo=1, T=20, memoria="posicao"
+    )
+    assert {linha["memoria"] for linha in linhas} == {"posicao"}
+    assert {linha["agente"] for linha in linhas} == {
+        "Reativo simples",
+        "Baseado em modelo",
+    }

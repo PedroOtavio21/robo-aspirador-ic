@@ -7,13 +7,14 @@ import random
 import pandas as pd
 from matplotlib.figure import Figure
 
-from .agentes import AGENTES, AgenteReativoSimples
+from .agentes import AGENTES, AgenteBaseadoEmModelo, AgenteReativoSimples
 from .ambiente import Ambiente, Config
 from .simulador import Simulador
 
 TAMANHO_FIXO = 8
 T_PADRAO = 500
 REPETICOES_REATIVO_PADRAO = 10
+MEMORIA_PADRAO = "mapa"
 
 DIR_CONFIGS = "resultados/configuracoes.json"
 DIR_RAW = "resultados/raw"
@@ -54,6 +55,7 @@ def rodar_configuracao(
     config: Config,
     repeticoes_reativo: int = REPETICOES_REATIVO_PADRAO,
     T: int = T_PADRAO,
+    memoria: str = MEMORIA_PADRAO,
 ) -> tuple[list[dict], list[dict]]:
     linhas: list[dict] = []
     historico: list[dict] = []
@@ -70,7 +72,10 @@ def rodar_configuracao(
                 posicao_inicial=config.posicao_inicial,
             )
             mapa_inicial = ambiente.mapa_inicial_str()
-            agente = classe(seed=config.seed + repeticao)
+            if classe is AgenteBaseadoEmModelo:
+                agente = classe(seed=config.seed + repeticao, memoria=memoria)
+            else:
+                agente = classe(seed=config.seed + repeticao)
             simulador = Simulador(ambiente, agente, T=T)
             resultado = simulador.rodar()
 
@@ -86,6 +91,7 @@ def rodar_configuracao(
                     f"{config.posicao_inicial[1]}",
                     "mapa_inicial": mapa_inicial,
                     "agente": nome,
+                    "memoria": memoria,
                     "repeticao": repeticao,
                     "score_a": resultado.score_a,
                     "score_b": resultado.score_b,
@@ -118,11 +124,14 @@ def executar_bateria(
     configs: list[Config],
     repeticoes_reativo: int = REPETICOES_REATIVO_PADRAO,
     T: int = T_PADRAO,
+    memoria: str = MEMORIA_PADRAO,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     linhas: list[dict] = []
     historico: list[dict] = []
     for config in configs:
-        novas_linhas, novo_historico = rodar_configuracao(config, repeticoes_reativo, T)
+        novas_linhas, novo_historico = rodar_configuracao(
+            config, repeticoes_reativo, T, memoria
+        )
         linhas.extend(novas_linhas)
         historico.extend(novo_historico)
     return pd.DataFrame(linhas), pd.DataFrame(historico)

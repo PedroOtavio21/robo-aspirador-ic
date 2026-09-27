@@ -24,6 +24,11 @@ Roteiro alinhado à Seção 4 do `GUIA.md`.
   3. fronteira desconhecida (valor `0`) mais próxima;
   4. sem alvos → `NOOP`.
 
+A memória é configurável: **Mapa** (acima) ou **1 posição** — neste, o agente
+guarda só a posição atual e a anterior, aspira se sujo e evita refazer o último
+passo, sem construir mapa. O modo "1 posição" é mais fraco e evidencia o papel
+da memória; é selecionável na GUI e por `--memoria`.
+
 Em ambos os casos, as ações são aplicadas por `aspirador/ambiente.py`
 (`aplicar`), que registra batidas e movimentos.
 

@@ -84,6 +84,12 @@ class GradeCanvas(tk.Canvas):
         ax, ay = estado.posicao
         self._agente(ax - minx, ay - miny)
 
+    def mostrar_mensagem(self, texto: str) -> None:
+        self.delete("all")
+        self._t = self.tamanho_celula
+        self._redimensionar(8, 4)
+        self.create_text(12, 12, anchor="nw", text=texto, fill="#555555")
+
     def _redimensionar(self, largura: int, altura: int) -> None:
         self.configure(width=largura * self._t, height=altura * self._t)
 

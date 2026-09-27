@@ -128,6 +128,9 @@ class Agente:
     def mapa_interno(self):
         return None
 
+    def descricao_memoria(self) -> str | None:
+        return None
+
 
 class AgenteReativoSimples(Agente):
     nome = "Reativo simples"
@@ -150,22 +153,56 @@ class AgenteReativoSimples(Agente):
 class AgenteBaseadoEmModelo(Agente):
     nome = "Baseado em modelo"
 
-    def __init__(self, seed: int = 0, capacidade: int = CAPACIDADE_PADRAO) -> None:
+    def __init__(
+        self,
+        seed: int = 0,
+        capacidade: int = CAPACIDADE_PADRAO,
+        memoria: str = "mapa",
+    ) -> None:
+        if memoria not in ("mapa", "posicao"):
+            raise ValueError(f"Memoria invalida: {memoria!r}")
         self.seed = seed
+        self.memoria = memoria
         self.estado = EstadoInterno(capacidade)
         self.reset(seed)
 
     def reset(self, seed: int | None = None) -> None:
         if seed is not None:
             self.seed = seed
+        self._rng = random.Random(self.seed)
         self.estado.reset()
         self._acao_anterior: Acao | None = None
+        self._posicao = (0, 0)
+        self._posicao_anterior: tuple[int, int] | None = None
 
     def agir(self, percepcao: Percepcao) -> Acao:
-        self.estado.atualizar(percepcao, self._acao_anterior)
-        acao = self._decidir(percepcao)
+        if self.memoria == "posicao":
+            acao = self._agir_posicao(percepcao)
+        else:
+            self.estado.atualizar(percepcao, self._acao_anterior)
+            acao = self._decidir(percepcao)
         self._acao_anterior = acao
         return acao
+
+    def _agir_posicao(self, percepcao: Percepcao) -> Acao:
+        self._posicao_anterior = self._posicao
+        self._posicao = percepcao.posicao
+        if percepcao.sujo:
+            return Acao.ASPIRAR
+        return self._movimento_sem_retrocesso(percepcao)
+
+    def _movimento_sem_retrocesso(self, percepcao: Percepcao) -> Acao:
+        atual = self._posicao
+        anterior = self._posicao_anterior
+        volta = None
+        if anterior is not None:
+            volta = _DELTA_POR_PASSO.get(
+                (anterior[0] - atual[0], anterior[1] - atual[1])
+            )
+        candidatos = [m for m in MOVIMENTOS if m is not volta]
+        if not candidatos or percepcao.bateu:
+            candidatos = list(MOVIMENTOS)
+        return self._rng.choice(candidatos)
 
     def _decidir(self, percepcao: Percepcao) -> Acao:
         if percepcao.sujo:
@@ -200,8 +237,19 @@ class AgenteBaseadoEmModelo(Agente):
                     fila.append((vizinho, primeiro or vizinho))
         return None
 
-    def mapa_interno(self) -> EstadoInterno:
+    def mapa_interno(self):
+        if self.memoria == "posicao":
+            return None
         return self.estado
+
+    def descricao_memoria(self) -> str | None:
+        if self.memoria != "posicao":
+            return None
+        return (
+            "Memória: apenas a posição atual\n"
+            f"atual: {self._posicao}\n"
+            f"anterior: {self._posicao_anterior}"
+        )
 
 
 AGENTES = {

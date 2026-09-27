@@ -39,6 +39,7 @@ pip install -r requirements.txt
 
 pytest -q
 python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
+python -m aspirador --memoria posicao   # opcional; padrão da bateria: mapa
 ```
 
 A bateria gera:
@@ -69,7 +70,9 @@ python -m aspirador.gui
 Na aba **Simulação** o usuário configura manualmente: **agente** (reativo
 simples / baseado em modelos), **seed**, **largura × altura**, **densidade de
 sujeira**, **densidade de obstáculos**, **posição inicial** (vazia = aleatória)
-e **T** (períodos). Os botões **Novo / Passo / Play-Pause** controlam a execução
+e **T** (períodos). Para o agente baseado em modelos há ainda o seletor
+**Memória** (`Mapa (matriz)` ou `Apenas 1 posição`). Os botões
+**Novo / Passo / Play-Pause** controlam a execução
 e o placar mostra passo, Medida A, Medida B, movimentos e status. Dois canvas
 exibem o **ambiente real** e o **mapa interno 0–4**. A aba **Resultados** embute
 os gráficos da bateria (lidos de `resultados/raw/`). Há ainda a opção **"Parar
@@ -118,6 +121,22 @@ Matriz com origem no ponto de partida (capacidade máxima fixa):
 | 2 | sujo conhecido |
 | 3 | passado e limpo |
 | 4 | barreira / obstáculo / limite |
+
+## Memória do agente baseado em modelos
+
+A memória é configurável:
+
+- **Mapa (padrão):** acumula a matriz 0–4 a partir das percepções e decide por
+  BFS (sujo conhecido → fronteira → `NOOP`).
+- **1 posição:** guarda apenas a posição atual e a anterior (sem mapa). Aspira se
+  a célula está suja; caso contrário, move-se evitando refazer o último passo
+  (e libera a volta ao bater, para não travar em becos).
+
+O modo "1 posição" é mais fraco por construção e serve para evidenciar o papel
+da memória. Selecionável na GUI (**Memória**) e por `--memoria {mapa,posicao}`
+(padrão `mapa`; a coluna `memoria` é registrada em `resultados/raw/`). Rodar com
+`--memoria posicao` sobrescreve as saídas da bateria principal — use
+deliberadamente.
 
 ## Critério de parada
 
