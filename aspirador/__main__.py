@@ -21,7 +21,9 @@ def main() -> None:
     parser.add_argument("--T", type=int, default=T_PADRAO)
     parser.add_argument("--seed", type=int, default=2024)
     parser.add_argument("--tamanho", type=int, default=TAMANHO_FIXO)
-    parser.add_argument("--memoria", choices=("mapa", "posicao"), default=MEMORIA_PADRAO)
+    parser.add_argument(
+        "--memoria", choices=("mapa", "posicao", "hibrida"), default=MEMORIA_PADRAO
+    )
     args = parser.parse_args()
 
     configs = gerar_configuracoes(args.configs, args.seed, args.tamanho)

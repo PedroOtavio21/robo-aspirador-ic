@@ -46,7 +46,12 @@ class EstadoInterno:
             return
         self.matriz[idx[0]][idx[1]] = valor
 
-    def atualizar(self, percepcao: Percepcao, acao_anterior: Acao | None) -> None:
+    def atualizar(
+        self,
+        percepcao: Percepcao,
+        acao_anterior: Acao | None,
+        vizinhanca: bool = True,
+    ) -> None:
         pos_anterior = self.posicao
         self.posicao = percepcao.posicao
 
@@ -60,6 +65,9 @@ class EstadoInterno:
             self.marcar(self.posicao, PASSADO_LIMPO)
         elif self.valor(self.posicao) == NADA:
             self.marcar(self.posicao, PASSADO)
+
+        if not vizinhanca:
+            return
 
         for dx, dy, sujo, obstaculo in percepcao.vizinhanca:
             alvo = (self.posicao[0] + dx, self.posicao[1] + dy)
@@ -159,7 +167,7 @@ class AgenteBaseadoEmModelo(Agente):
         capacidade: int = CAPACIDADE_PADRAO,
         memoria: str = "mapa",
     ) -> None:
-        if memoria not in ("mapa", "posicao"):
+        if memoria not in ("mapa", "posicao", "hibrida"):
             raise ValueError(f"Memoria invalida: {memoria!r}")
         self.seed = seed
         self.memoria = memoria
@@ -178,6 +186,9 @@ class AgenteBaseadoEmModelo(Agente):
     def agir(self, percepcao: Percepcao) -> Acao:
         if self.memoria == "posicao":
             acao = self._agir_posicao(percepcao)
+        elif self.memoria == "hibrida":
+            self.estado.atualizar(percepcao, self._acao_anterior, vizinhanca=False)
+            acao = self._decidir_hibrida(percepcao)
         else:
             self.estado.atualizar(percepcao, self._acao_anterior)
             acao = self._decidir(percepcao)
@@ -203,6 +214,32 @@ class AgenteBaseadoEmModelo(Agente):
         if not candidatos or percepcao.bateu:
             candidatos = list(MOVIMENTOS)
         return self._rng.choice(candidatos)
+
+    def _decidir_hibrida(self, percepcao: Percepcao) -> Acao:
+        if percepcao.sujo:
+            return Acao.ASPIRAR
+
+        atual = self.estado.posicao
+        obstaculos = {
+            (atual[0] + dx, atual[1] + dy)
+            for dx, dy, _sujo, obstaculo in percepcao.vizinhanca
+            if obstaculo
+        }
+
+        novos: list[Acao] = []
+        revisitar: list[Acao] = []
+        for movimento in MOVIMENTOS:
+            dx, dy = DELTA[movimento]
+            destino = (atual[0] + dx, atual[1] + dy)
+            if destino in obstaculos or self.estado.valor(destino) == BARREIRA:
+                continue
+            if self.estado.valor(destino) == NADA:
+                novos.append(movimento)
+            else:
+                revisitar.append(movimento)
+
+        opcoes = novos or revisitar or list(MOVIMENTOS)
+        return self._rng.choice(opcoes)
 
     def _decidir(self, percepcao: Percepcao) -> Acao:
         if percepcao.sujo:

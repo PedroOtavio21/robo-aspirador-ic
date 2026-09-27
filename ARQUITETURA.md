@@ -39,8 +39,9 @@ docs/
   geração reprodutível por seed com flood fill, ações (`Acao`), aplicação das
   ações (`aplicar`), e o sensor local (`Sensor`/`Percepcao`).
 - **`agentes.py`** — o agente reativo simples e o baseado em modelos; este
-  último tem memória configurável: `mapa` (matriz 0–4 + BFS) ou `posicao`
-  (só a posição atual/anterior, sem mapa).
+  último tem memória configurável: `mapa` (matriz 0–4 com célula + 8 vizinhos e
+  BFS), `posicao` (só a posição atual/anterior) ou `hibrida` (trajetória com 1
+  célula por passo).
 - **`simulador.py`** — ciclo percepção → decisão → ação → medida, as duas
   medidas de desempenho (contando apenas células limpas **pelo agente**), o
   critério de parada (T fixo; opcionalmente encerrar quando limpo) e o resultado
@@ -60,7 +61,7 @@ Sensor.perceber(ambiente, bateu) -> Percepcao
 Agente.agir(percepcao)           -> Acao
 Agente.reset(seed)               -> None
 Agente.mapa_interno()            -> EstadoInterno | None
-AgenteBaseadoEmModelo(seed, memoria="mapa"|"posicao")
+AgenteBaseadoEmModelo(seed, memoria="mapa"|"posicao"|"hibrida")
 aplicar(ambiente, acao)          -> bool (bateu)
 Simulador.rodar(T)               -> Resultado
 Simulador(T, parar_quando_limpo) -> encerra ao limpar (T como teto) se True

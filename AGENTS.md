@@ -21,8 +21,8 @@
   "parar quando limpo" é apenas uma opção da GUI, com T como teto.
 - "Quadrado limpo" nas medidas = célula cuja sujeira foi **removida pelo
   agente**; células que já iniciam limpas não pontuam.
-- Memória do agente baseado em modelos: `mapa` (padrão) ou `posicao`; na GUI e
-  via `--memoria`. A bateria principal usa `mapa`.
+- Memória do agente baseado em modelos: `mapa` (padrão), `posicao` ou
+  `hibrida`; na GUI e via `--memoria`. A bateria principal usa `mapa`.
 
 ## Comandos
 

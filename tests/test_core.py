@@ -266,3 +266,43 @@ def test_rodar_configuracao_registra_memoria():
         "Reativo simples",
         "Baseado em modelo",
     }
+
+
+def test_hibrida_grava_sem_vizinhanca():
+    percepcao = Percepcao(
+        False, False, (1, 1), vizinhanca=((0, -1, False, True), (1, 0, True, False))
+    )
+    hibrida = EstadoInterno(capacidade=11)
+    hibrida.atualizar(percepcao, None, vizinhanca=False)
+    assert hibrida.valor((1, 1)) == PASSADO
+    assert hibrida.valor((1, 0)) == NADA
+    assert hibrida.valor((2, 1)) == NADA
+
+    completa = EstadoInterno(capacidade=11)
+    completa.atualizar(percepcao, None, vizinhanca=True)
+    assert completa.valor((1, 0)) == BARREIRA
+    assert completa.valor((2, 1)) == SUJO_INTERNO
+
+
+def test_hibrida_evita_caminho_memorizado():
+    agente = AgenteBaseadoEmModelo(seed=0, memoria="hibrida")
+    agente.estado.marcar((0, 1), PASSADO)
+    acao = agente._decidir_hibrida(Percepcao(False, False, (0, 0)))
+    assert acao is not Acao.DIREITA
+
+
+def test_hibrida_reprodutivel():
+    percepcoes = [Percepcao(False, False, (0, i)) for i in range(1, 8)]
+    a = AgenteBaseadoEmModelo(seed=3, memoria="hibrida")
+    b = AgenteBaseadoEmModelo(seed=3, memoria="hibrida")
+    assert [a.agir(p) for p in percepcoes] == [b.agir(p) for p in percepcoes]
+
+
+def test_rodar_configuracao_registra_memoria_hibrida():
+    from aspirador.experimentos import gerar_configuracoes, rodar_configuracao
+
+    config = gerar_configuracoes(1, seed=2, tamanho=5)[0]
+    linhas, _ = rodar_configuracao(
+        config, repeticoes_reativo=1, T=20, memoria="hibrida"
+    )
+    assert {linha["memoria"] for linha in linhas} == {"hibrida"}

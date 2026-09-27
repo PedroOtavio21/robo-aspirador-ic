@@ -13,7 +13,11 @@ LARGURA_PADRAO, ALTURA_PADRAO = 8, 8
 DENSIDADE_SUJEIRA_PADRAO, DENSIDADE_OBSTACULO_PADRAO = 0.4, 0.15
 T_PADRAO = 500
 INTERVALO_PADRAO = 200
-MEMORIAS = {"Mapa (matriz)": "mapa", "Apenas 1 posição": "posicao"}
+MEMORIAS = {
+    "Mapa (matriz)": "mapa",
+    "Apenas 1 posição": "posicao",
+    "Híbrida (mapa de 1 célula)": "hibrida",
+}
 
 
 class JanelaPrincipal(tk.Tk):
@@ -71,7 +75,7 @@ class JanelaPrincipal(tk.Tk):
             row=0, column=4, sticky="e", padx=(6, 2), pady=3
         )
         self.combo_memoria = ttk.Combobox(
-            caixa, values=list(MEMORIAS), state="disabled", width=16
+            caixa, values=list(MEMORIAS), state="disabled", width=26
         )
         self.combo_memoria.current(0)
         self.combo_memoria.grid(row=0, column=5, sticky="w", padx=(0, 12), pady=3)

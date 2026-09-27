@@ -42,9 +42,10 @@ sensores operam estritamente de forma local.
   da GUI.
 - **Métricas auxiliares** de eficiência (passos até limpar, movimentos até
   limpo e percentual de sujeira removida), sem alterar as Medidas A/B.
-- **Memória configurável** no agente baseado em modelos: `mapa` (padrão) ou
-  `posicao` (guarda só a posição atual/anterior, com anti-retrocesso); exposta
-  na GUI e na CLI via `--memoria`.
+- **Memória configurável** no agente baseado em modelos: `mapa` (padrão),
+  `posicao` (só a posição atual/anterior, anti-retrocesso) ou `hibrida`
+  (trajetória acumulada com 1 célula por passo); exposta na GUI e na CLI via
+  `--memoria`.
 
 ## 4. Decisões de corte
 

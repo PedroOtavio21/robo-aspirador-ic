@@ -71,7 +71,8 @@ Na aba **Simulação** o usuário configura manualmente: **agente** (reativo
 simples / baseado em modelos), **seed**, **largura × altura**, **densidade de
 sujeira**, **densidade de obstáculos**, **posição inicial** (vazia = aleatória)
 e **T** (períodos). Para o agente baseado em modelos há ainda o seletor
-**Memória** (`Mapa (matriz)` ou `Apenas 1 posição`). Os botões
+**Memória** (`Mapa (matriz)`, `Apenas 1 posição` ou
+`Híbrida (mapa de 1 célula)`). Os botões
 **Novo / Passo / Play-Pause** controlam a execução
 e o placar mostra passo, Medida A, Medida B, movimentos e status. Dois canvas
 exibem o **ambiente real** e o **mapa interno 0–4**. A aba **Resultados** embute
@@ -131,12 +132,15 @@ A memória é configurável:
 - **1 posição:** guarda apenas a posição atual e a anterior (sem mapa). Aspira se
   a célula está suja; caso contrário, move-se evitando refazer o último passo
   (e libera a volta ao bater, para não travar em becos).
+- **Híbrida:** acumula a **trajetória** gravando **1 célula por passo** (sem os 8
+  vizinhos); decide evitando todo o caminho já memorizado e as barreiras,
+  preferindo células novas, com aleatoriedade (seed) para escapar de becos.
 
-O modo "1 posição" é mais fraco por construção e serve para evidenciar o papel
-da memória. Selecionável na GUI (**Memória**) e por `--memoria {mapa,posicao}`
-(padrão `mapa`; a coluna `memoria` é registrada em `resultados/raw/`). Rodar com
-`--memoria posicao` sobrescreve as saídas da bateria principal — use
-deliberadamente.
+Os modos "1 posição" e "híbrida" são mais fracos por construção e servem para
+evidenciar o papel da memória. Selecionáveis na GUI (**Memória**) e por
+`--memoria {mapa,posicao,hibrida}` (padrão `mapa`; a coluna `memoria` é
+registrada em `resultados/raw/`). Rodar com outro valor sobrescreve as saídas da
+bateria principal — use deliberadamente.
 
 ## Critério de parada
 
