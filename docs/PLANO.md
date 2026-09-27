@@ -31,7 +31,7 @@ sensores operam estritamente de forma local.
 | Múltiplas configurações (sujeira/obstáculos/posição) | `aspirador/experimentos.py` |
 | Pontuação por configuração | `resultados/tables/por_config.csv` |
 | Pontuação média global | `resultados/tables/medias_globais.csv` |
-| Apresentação (mecanismos, comportamento, tabelas, racionalidade) | `docs/apresentacao.md` |
+| Apresentação (mecanismos, comportamento, tabelas, racionalidade) | apresentação oral (fora do repositório) |
 
 ## 3. Extras (não exigidos pelo guia)
 
@@ -51,8 +51,8 @@ sensores operam estritamente de forma local.
 
 - **Núcleo em 3 módulos** (`ambiente.py`, `agentes.py`, `simulador.py`) e
   experimentos em um único módulo.
-- **Documentação final enxuta** — `README.md` + `docs/apresentacao.md`; os
-  documentos antigos são substituídos.
+- **Documentação final enxuta** — `README.md` na raiz e `docs/` (`GUIA.md`,
+  `PLANO.md`, `ARQUITETURA.md`).
 - **Tamanho fixo 8 × 8** e **T = 500** períodos na bateria principal (a GUI
   permite outros valores manualmente).
 - **Critério de parada:** T fixo nos experimentos (comparabilidade da Medida A);
@@ -66,12 +66,12 @@ Fora de escopo: empacotamento publicável, execução paralela.
 
 ## 5. Fases
 
-1. `GUIA.md` imutável + `AGENTS.md`.
-2. `PLANO.md` e `ARQUITETURA.md`.
+1. `docs/GUIA.md` imutável + `AGENTS.md`.
+2. `docs/PLANO.md` e `docs/ARQUITETURA.md`.
 3. Código em `aspirador/`.
 4. Testes essenciais em `tests/test_core.py`.
 5. Bateria experimental e regeneração de `resultados/`.
-6. `docs/apresentacao.md` e `README.md`.
+6. `README.md`.
 7. Interface gráfica em `aspirador/gui/` + `main.py`.
 8. Validação (pytest + CLI + GUI).
 

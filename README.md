@@ -9,10 +9,10 @@ Simulador do mundo do aspirador de pó com dois agentes — **reativo simples** 
   movimento.
 
 > **Interpretação adotada:** "quadrado limpo" = célula cuja sujeira foi removida
-> pelo agente. Células que já iniciam limpas **não pontuam**. O `GUIA.md` usa a
-> expressão "cada quadrado limpo" sem restringir a origem; adotamos esta leitura
-> mais estrita (a alternativa contaria também as células pré-limpias, inflando a
-> medida sem refletir trabalho do agente).
+> pelo agente. Células que já iniciam limpas **não pontuam**. O `docs/GUIA.md` usa
+> a expressão "cada quadrado limpo" sem restringir a origem; adotamos esta
+> leitura mais estrita (a alternativa contaria também as células pré-limpias,
+> inflando a medida sem refletir trabalho do agente).
 
 Stack: Python 3.11+, com execução por **CLI** e por **interface gráfica
 (Tkinter)**. Dependências: `matplotlib`, `pandas`, `pytest` (+ `python3-tk`
@@ -22,13 +22,12 @@ como pacote de sistema para a interface).
 
 | Arquivo | Papel |
 |---|---|
-| `GUIA.md` | **Fonte de verdade imutável.** Não editar. |
-| `PLANO.md` | Escopo, requisitos e fases (deriva do guia). |
-| `ARQUITETURA.md` | Módulos, contratos e fluxo. |
-| `docs/apresentacao.md` | Roteiro da apresentação (10 min). |
+| `docs/GUIA.md` | **Fonte de verdade imutável.** Não editar. |
+| `docs/PLANO.md` | Escopo, requisitos e fases (deriva do guia). |
+| `docs/ARQUITETURA.md` | Módulos, contratos e fluxo. |
 | `project-document.md` | Enunciado original da disciplina. |
 
-Integridade do guia: `sha256(GUIA.md) = 13ee570fbe224882070e9c2c59f5f0f33db327de24d1f558d4731062591b7c5e`.
+Integridade do guia: `sha256(docs/GUIA.md) = 13ee570fbe224882070e9c2c59f5f0f33db327de24d1f558d4731062591b7c5e`.
 
 ## Como executar
 
@@ -83,7 +82,8 @@ sem sujeira (T permanece como teto de segurança).
 ## Estrutura
 
 ```
-GUIA.md, PLANO.md, ARQUITETURA.md, README.md
+README.md           documentação principal
+AGENTS.md           regras do projeto
 main.py             atalho da GUI (python main.py)
 aspirador/
   ambiente.py       Ambiente, Config, Acao, Sensor/Percepcao, aplicar()
@@ -98,7 +98,7 @@ aspirador/
     __main__.py           entrada da GUI
 tests/test_core.py
 resultados/         raw, tables, charts (gerados)
-docs/apresentacao.md
+docs/               GUIA.md, PLANO.md, ARQUITETURA.md
 ```
 
 ## Contrato
@@ -176,8 +176,6 @@ Eficiência (médias por execução):
 | Reativo simples | 376,1* | 357,2* | 90,0 % |
 
 \* média apenas entre as execuções em que o reativo terminou a limpeza (24,2 %).
-
-Análise completa em `docs/apresentacao.md`.
 
 ## Reprodutibilidade
 

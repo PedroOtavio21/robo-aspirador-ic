@@ -2,10 +2,10 @@
 
 ## Fonte de verdade
 
-- `GUIA.md` é **imutável**. Nunca edite, renomeie, mova ou reformate esse arquivo.
-- `PLANO.md`, `ARQUITETURA.md`, o código (`aspirador/`), os testes e a documentação
-  final devem **derivar e obedecer** ao `GUIA.md`.
-- Se houver conflito entre qualquer artefato e o `GUIA.md`, o `GUIA.md` prevalece.
+- `docs/GUIA.md` é **imutável**. Nunca edite, renomeie, mova ou reformate esse arquivo.
+- `docs/PLANO.md`, `docs/ARQUITETURA.md`, o código (`aspirador/`), os testes e a
+  documentação final devem **derivar e obedecer** ao `docs/GUIA.md`.
+- Se houver conflito entre qualquer artefato e o `docs/GUIA.md`, ele prevalece.
 - `project-document.md` é o enunciado original da disciplina e também não deve ser alterado.
 
 ## Convenções

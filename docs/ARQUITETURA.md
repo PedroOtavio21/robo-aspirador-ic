@@ -5,11 +5,9 @@ Derivada de `PLANO.md` e de `GUIA.md`.
 ## 1. Estrutura
 
 ```
-GUIA.md              # fonte de verdade imutável
-AGENTS.md            # regras do projeto
-PLANO.md             # escopo, requisitos e fases
-ARQUITETURA.md       # este documento
 README.md            # execução, estrutura e resultados
+AGENTS.md            # regras do projeto
+main.py              # atalho da GUI: python main.py
 aspirador/
   __init__.py
   ambiente.py        # Ambiente, Config, Acao, Percepcao, Sensor, aplicar()
@@ -23,14 +21,15 @@ aspirador/
     widget_grade.py      # canvas: ambiente e mapa interno 0-4
     widget_resultados.py # aba com gráficos da bateria
     __main__.py          # python -m aspirador.gui
-main.py              # atalho da GUI: python main.py
 tests/
   test_core.py
 resultados/
-  tables/            # por_config.csv, medias_globais.csv
+  tables/            # por_config.csv, medias_globais.csv, eficiencia.csv
   charts/            # graficos.png, barras_medidas.png, curva_limpas.png, boxplot.png
 docs/
-  apresentacao.md    # roteiro da apresentação (10 min)
+  GUIA.md            # fonte de verdade imutável
+  PLANO.md           # escopo, requisitos e fases
+  ARQUITETURA.md     # este documento
 ```
 
 ## 2. Responsabilidades
