@@ -1,0 +1,4 @@
+agente,memoria,score_a,score_b,movimentos,passos,celulas_limpas,percentual_limpo,limpo,passos_ate_limpo,movimentos_ate_limpo
+Baseado em modelo,hibrida,9622.675,9144.525,478.15,500.0,21.85,99.62916666666666,0.925,193.8918918918919,171.9189189189189
+Baseado em modelo,mapa,10161.05,10079.4,81.65,500.0,21.925,100.0,1.0,84.25,62.325
+Baseado em modelo,posicao,8026.375,7547.4,478.975,500.0,21.025,96.2928519762915,0.55,336.04545454545456,315.77272727272725

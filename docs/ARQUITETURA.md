@@ -19,13 +19,15 @@ aspirador/
     __init__.py
     janela.py            # janela, controles e laço de simulação
     widget_grade.py      # canvas: ambiente e mapa interno 0-4
-    widget_resultados.py # aba com gráficos da bateria
+    widget_resultados.py # aba com gráficos da bateria (A/B)
+    widget_extra.py      # aba com métricas complementares
     __main__.py          # python -m aspirador.gui
 tests/
   test_core.py
 resultados/
   tables/            # por_config.csv, medias_globais.csv, eficiencia.csv
   charts/            # graficos.png, barras_medidas.png, curva_limpas.png, boxplot.png
+  extra/             # parar_limpo, memorias, eficiencia, graficos_extra (com --extra)
 docs/
   GUIA.md            # fonte de verdade imutável
   PLANO.md           # escopo, requisitos e fases
@@ -46,8 +48,9 @@ docs/
   critério de parada (T fixo; opcionalmente encerrar quando limpo) e o resultado
   consolidado, incluindo métricas de eficiência (passos e movimentos até limpar,
   percentual de sujeira removida).
-- **`experimentos.py`** — geração de configurações, execução da bateria,
-  tabelas agregadas e gráficos.
+- **`experimentos.py`** — geração de configurações, execução da bateria
+  principal (A/B) e da bateria extra (`--extra`: parar quando limpo, modos de
+  memória, eficiência), tabelas agregadas e gráficos.
 - **`gui/`** — interface Tkinter opcional que consome o núcleo; permite
   configurar a simulação (agente, seed, tamanho, densidades, posição, T) e
   acompanhá-la. Não é importada por `aspirador/__init__.py`, então o núcleo e a

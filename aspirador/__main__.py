@@ -8,7 +8,9 @@ from .experimentos import (
     T_PADRAO,
     TAMANHO_FIXO,
     executar_bateria,
+    executar_extra,
     gerar_configuracoes,
+    salvar_extra,
     salvar_graficos,
     salvar_saidas,
 )
@@ -23,6 +25,11 @@ def main() -> None:
     parser.add_argument("--tamanho", type=int, default=TAMANHO_FIXO)
     parser.add_argument(
         "--memoria", choices=("mapa", "posicao", "hibrida"), default=MEMORIA_PADRAO
+    )
+    parser.add_argument(
+        "--extra",
+        action="store_true",
+        help="Gera tambem os dados extras (parar quando limpo e modos de memoria).",
     )
     args = parser.parse_args()
 
@@ -40,6 +47,12 @@ def main() -> None:
 
     print("Saidas em resultados/ (raw, tables e charts).")
     print(df_resultados.groupby("agente")[["score_a", "score_b"]].mean().round(2))
+
+    if args.extra:
+        print("Gerando extras (parar quando limpo e modos de memoria)...")
+        df_stop, df_mem = executar_extra(configs, args.repeticoes, args.T)
+        salvar_extra(df_stop, df_mem, df_resultados)
+        print("Extras em resultados/extra/.")
 
 
 if __name__ == "__main__":

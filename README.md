@@ -39,6 +39,7 @@ pip install -r requirements.txt
 pytest -q
 python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
 python -m aspirador --memoria posicao   # opcional; padrão da bateria: mapa
+python -m aspirador --extra             # gera também resultados/extra/
 ```
 
 A bateria gera:
@@ -48,7 +49,9 @@ A bateria gera:
   `eficiencia.csv`;
 - `resultados/charts/` — `graficos.png`, `barras_medidas.png`,
   `curva_limpas.png`, `boxplot.png`;
-- `resultados/configuracoes.json` — configurações usadas.
+- `resultados/configuracoes.json` — configurações usadas;
+- `resultados/extra/` (com `--extra`) — métricas complementares: bateria com
+  "parar quando limpo", comparação de modos de memória e eficiência.
 
 ## Interface gráfica
 
@@ -75,9 +78,11 @@ e **T** (períodos). Para o agente baseado em modelos há ainda o seletor
 **Novo / Passo / Play-Pause** controlam a execução
 e o placar mostra passo, Medida A, Medida B, movimentos e status. Dois canvas
 exibem o **ambiente real** e o **mapa interno 0–4**. A aba **Resultados** embute
-os gráficos da bateria (lidos de `resultados/raw/`). Há ainda a opção **"Parar
-quando limpo"**: com ela marcada, o episódio encerra assim que o ambiente fica
-sem sujeira (T permanece como teto de segurança).
+os gráficos da bateria (lidos de `resultados/raw/`). A aba **Extra** mostra as
+métricas complementares de `resultados/extra/` (parar quando limpo, modos de
+memória e eficiência); se faltarem, rode `python -m aspirador --extra`. Há ainda
+a opção **"Parar quando limpo"**: com ela marcada, o episódio encerra assim que o
+ambiente fica sem sujeira (T permanece como teto de segurança).
 
 ## Estrutura
 
@@ -94,10 +99,11 @@ aspirador/
   gui/
     janela.py             janela, controles e laço de simulação
     widget_grade.py       canvas do ambiente e do mapa interno
-    widget_resultados.py  aba com gráficos da bateria
+    widget_resultados.py  aba com gráficos da bateria (A/B)
+    widget_extra.py       aba com métricas complementares
     __main__.py           entrada da GUI
 tests/test_core.py
-resultados/         raw, tables, charts (gerados)
+resultados/         raw, tables, charts, extra (gerados)
 docs/               GUIA.md, PLANO.md, ARQUITETURA.md
 ```
 

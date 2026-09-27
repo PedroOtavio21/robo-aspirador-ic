@@ -6,6 +6,7 @@ from tkinter import messagebox, ttk
 from ..agentes import AGENTES, AgenteBaseadoEmModelo
 from ..ambiente import Ambiente
 from ..simulador import Simulador
+from .widget_extra import WidgetExtra
 from .widget_grade import GradeCanvas
 from .widget_resultados import WidgetResultados
 
@@ -41,8 +42,10 @@ class JanelaPrincipal(tk.Tk):
 
         self.aba_simulacao = ttk.Frame(notebook)
         self.aba_resultados = WidgetResultados(notebook)
+        self.aba_extra = WidgetExtra(notebook)
         notebook.add(self.aba_simulacao, text="Simulação")
         notebook.add(self.aba_resultados, text="Resultados")
+        notebook.add(self.aba_extra, text="Extra")
 
         self._montar_parametros()
         self._montar_controles()

@@ -46,6 +46,9 @@ sensores operam estritamente de forma local.
   `posicao` (só a posição atual/anterior, anti-retrocesso) ou `hibrida`
   (trajetória acumulada com 1 célula por passo); exposta na GUI e na CLI via
   `--memoria`.
+- **Dados extras / aba Extra** (`--extra`): A/B com "parar quando limpo",
+  comparação dos modos de memória e eficiência. Evidência secundária — a
+  principal continua sendo A/B com T fixo.
 
 ## 4. Decisões de corte
 

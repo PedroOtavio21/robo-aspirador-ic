@@ -30,6 +30,7 @@
 pip install -r requirements.txt
 pytest -q
 python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
+python -m aspirador --extra   # métricas complementares em resultados/extra/
 sudo apt install python3-tk   # pré-requisito da interface
 python main.py                # interface gráfica
 ```

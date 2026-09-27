@@ -306,3 +306,49 @@ def test_rodar_configuracao_registra_memoria_hibrida():
         config, repeticoes_reativo=1, T=20, memoria="hibrida"
     )
     assert {linha["memoria"] for linha in linhas} == {"hibrida"}
+
+
+def test_bateria_parar_quando_limpo():
+    from aspirador.experimentos import gerar_configuracoes, rodar_configuracao
+
+    config = gerar_configuracoes(1, seed=3, tamanho=4)[0]
+    linhas, _ = rodar_configuracao(
+        config, repeticoes_reativo=1, T=300, parar_quando_limpo=True
+    )
+    modelo = [linha for linha in linhas if linha["agente"] == "Baseado em modelo"][0]
+    assert modelo["limpo"] is True
+    assert modelo["passos"] < 300
+
+
+def test_rodar_memorias_compara_tres_modos():
+    import pandas as pd
+
+    from aspirador.experimentos import (
+        gerar_configuracoes,
+        resumo_memorias,
+        rodar_memorias,
+    )
+
+    config = gerar_configuracoes(1, seed=4, tamanho=5)[0]
+    linhas = rodar_memorias(config, T=30)
+    assert {linha["memoria"] for linha in linhas} == {"mapa", "posicao", "hibrida"}
+
+    resumo = resumo_memorias(pd.DataFrame(linhas))
+    assert len(resumo) == 3
+
+
+def test_resumo_parar_limpo():
+    import pandas as pd
+
+    from aspirador.experimentos import (
+        gerar_configuracoes,
+        resumo_parar_limpo,
+        rodar_configuracao,
+    )
+
+    config = gerar_configuracoes(1, seed=5, tamanho=4)[0]
+    linhas, _ = rodar_configuracao(
+        config, repeticoes_reativo=1, T=100, parar_quando_limpo=True
+    )
+    resumo = resumo_parar_limpo(pd.DataFrame(linhas))
+    assert set(resumo["agente"]) == {"Reativo simples", "Baseado em modelo"}

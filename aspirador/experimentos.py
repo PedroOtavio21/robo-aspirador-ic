@@ -15,11 +15,13 @@ TAMANHO_FIXO = 8
 T_PADRAO = 500
 REPETICOES_REATIVO_PADRAO = 10
 MEMORIA_PADRAO = "mapa"
+MEMORIAS_COMPARADAS = ("mapa", "posicao", "hibrida")
 
 DIR_CONFIGS = "resultados/configuracoes.json"
 DIR_RAW = "resultados/raw"
 DIR_TABELAS = "resultados/tables"
 DIR_CHARTS = "resultados/charts"
+DIR_EXTRA = "resultados/extra"
 
 CORES = {"Reativo simples": "#d98b3a", "Baseado em modelo": "#2b6cb0"}
 MEDIDAS = {
@@ -56,6 +58,7 @@ def rodar_configuracao(
     repeticoes_reativo: int = REPETICOES_REATIVO_PADRAO,
     T: int = T_PADRAO,
     memoria: str = MEMORIA_PADRAO,
+    parar_quando_limpo: bool = False,
 ) -> tuple[list[dict], list[dict]]:
     linhas: list[dict] = []
     historico: list[dict] = []
@@ -76,7 +79,9 @@ def rodar_configuracao(
                 agente = classe(seed=config.seed + repeticao, memoria=memoria)
             else:
                 agente = classe(seed=config.seed + repeticao)
-            simulador = Simulador(ambiente, agente, T=T)
+            simulador = Simulador(
+                ambiente, agente, T=T, parar_quando_limpo=parar_quando_limpo
+            )
             resultado = simulador.rodar()
 
             linhas.append(
@@ -125,16 +130,68 @@ def executar_bateria(
     repeticoes_reativo: int = REPETICOES_REATIVO_PADRAO,
     T: int = T_PADRAO,
     memoria: str = MEMORIA_PADRAO,
+    parar_quando_limpo: bool = False,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     linhas: list[dict] = []
     historico: list[dict] = []
     for config in configs:
         novas_linhas, novo_historico = rodar_configuracao(
-            config, repeticoes_reativo, T, memoria
+            config, repeticoes_reativo, T, memoria, parar_quando_limpo
         )
         linhas.extend(novas_linhas)
         historico.extend(novo_historico)
     return pd.DataFrame(linhas), pd.DataFrame(historico)
+
+
+def rodar_memorias(
+    config: Config,
+    T: int = T_PADRAO,
+    memorias: tuple[str, ...] = MEMORIAS_COMPARADAS,
+) -> list[dict]:
+    linhas: list[dict] = []
+    for memoria in memorias:
+        ambiente = Ambiente(
+            config.largura,
+            config.altura,
+            config.densidade_sujeira,
+            config.densidade_obstaculo,
+            seed=config.seed,
+            posicao_inicial=config.posicao_inicial,
+        )
+        agente = AgenteBaseadoEmModelo(seed=config.seed, memoria=memoria)
+        resultado = Simulador(ambiente, agente, T=T).rodar()
+        linhas.append(
+            {
+                "config_id": config.config_id,
+                "agente": AgenteBaseadoEmModelo.nome,
+                "memoria": memoria,
+                "score_a": resultado.score_a,
+                "score_b": resultado.score_b,
+                "movimentos": resultado.movimentos,
+                "passos": resultado.passos,
+                "celulas_limpas": resultado.celulas_limpas,
+                "total_sujos": resultado.total_sujos,
+                "limpo": resultado.limpo,
+                "passos_ate_limpo": resultado.passos_ate_limpo,
+                "movimentos_ate_limpo": resultado.movimentos_ate_limpo,
+                "percentual_limpo": resultado.percentual_limpo,
+            }
+        )
+    return linhas
+
+
+def executar_extra(
+    configs: list[Config],
+    repeticoes_reativo: int = REPETICOES_REATIVO_PADRAO,
+    T: int = T_PADRAO,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    df_stop, _ = executar_bateria(
+        configs, repeticoes_reativo, T, parar_quando_limpo=True
+    )
+    linhas: list[dict] = []
+    for config in configs:
+        linhas.extend(rodar_memorias(config, T))
+    return df_stop, pd.DataFrame(linhas)
 
 
 def medias_globais(df: pd.DataFrame) -> pd.DataFrame:
@@ -178,6 +235,40 @@ def resumo_eficiencia(df: pd.DataFrame) -> pd.DataFrame:
     return (
         df.groupby("agente")
         .agg(
+            movimentos=("movimentos", "mean"),
+            passos=("passos", "mean"),
+            celulas_limpas=("celulas_limpas", "mean"),
+            percentual_limpo=("percentual_limpo", "mean"),
+            limpo=("limpo", "mean"),
+            passos_ate_limpo=("passos_ate_limpo", "mean"),
+            movimentos_ate_limpo=("movimentos_ate_limpo", "mean"),
+        )
+        .reset_index()
+    )
+
+
+def resumo_parar_limpo(df: pd.DataFrame) -> pd.DataFrame:
+    return (
+        df.groupby("agente")
+        .agg(
+            score_a=("score_a", "mean"),
+            score_b=("score_b", "mean"),
+            movimentos=("movimentos", "mean"),
+            passos=("passos", "mean"),
+            celulas_limpas=("celulas_limpas", "mean"),
+            percentual_limpo=("percentual_limpo", "mean"),
+            limpo=("limpo", "mean"),
+        )
+        .reset_index()
+    )
+
+
+def resumo_memorias(df: pd.DataFrame) -> pd.DataFrame:
+    return (
+        df.groupby(["agente", "memoria"])
+        .agg(
+            score_a=("score_a", "mean"),
+            score_b=("score_b", "mean"),
             movimentos=("movimentos", "mean"),
             passos=("passos", "mean"),
             celulas_limpas=("celulas_limpas", "mean"),
@@ -310,3 +401,84 @@ def salvar_graficos(
     plotar_boxplot(df_resultados, fig_box.add_subplot(1, 1, 1))
     fig_box.tight_layout()
     fig_box.savefig(os.path.join(destino, "boxplot.png"))
+
+
+def plotar_memorias(df_mem: pd.DataFrame, ax, metrica: str = "score_a") -> None:
+    resumo = resumo_memorias(df_mem)
+    ax.bar(resumo["memoria"], resumo[metrica], color=CORES.get("Baseado em modelo"))
+    ax.set_title("Modelo por memória — " + MEDIDAS.get(metrica, metrica))
+    ax.set_ylabel("pontuação")
+    ax.grid(axis="y", alpha=0.3)
+
+
+def plotar_eficiencia_extra(df: pd.DataFrame, ax) -> None:
+    resumo = resumo_eficiencia(df)
+    posicoes = list(range(len(resumo)))
+    ax.bar(
+        [p - 0.2 for p in posicoes],
+        resumo["movimentos"],
+        width=0.4,
+        label="movimentos",
+    )
+    ax.bar(
+        [p + 0.2 for p in posicoes],
+        resumo["passos_ate_limpo"].fillna(0.0),
+        width=0.4,
+        label="passos até limpar",
+    )
+    ax.set_xticks(posicoes)
+    ax.set_xticklabels(resumo["agente"], fontsize=8)
+    ax.set_title("Eficiência por agente")
+    ax.legend(fontsize=8)
+    ax.grid(axis="y", alpha=0.3)
+
+
+def montar_figura_extra(
+    df_stop: pd.DataFrame,
+    df_mem: pd.DataFrame,
+    df_principal: pd.DataFrame,
+    figura: Figure | None = None,
+) -> Figure:
+    if figura is None:
+        figura = Figure(figsize=(10, 7), dpi=100)
+    figura.clear()
+    plotar_barras(
+        df_stop, "score_a", figura.add_subplot(2, 2, 1),
+        "Medida A — parar quando limpo",
+    )
+    plotar_barras(
+        df_stop, "score_b", figura.add_subplot(2, 2, 2),
+        "Medida B — parar quando limpo",
+    )
+    plotar_memorias(df_mem, figura.add_subplot(2, 2, 3), "score_a")
+    plotar_eficiencia_extra(df_principal, figura.add_subplot(2, 2, 4))
+    figura.tight_layout()
+    return figura
+
+
+def salvar_extra(
+    df_stop: pd.DataFrame,
+    df_mem: pd.DataFrame,
+    df_principal: pd.DataFrame,
+    destino: str = DIR_EXTRA,
+) -> None:
+    os.makedirs(destino, exist_ok=True)
+    pesadas = ("acoes", "mapa_inicial")
+    df_stop.drop(columns=[c for c in pesadas if c in df_stop.columns]).to_csv(
+        os.path.join(destino, "stop_raw.csv"), index=False
+    )
+    df_mem.drop(columns=[c for c in pesadas if c in df_mem.columns]).to_csv(
+        os.path.join(destino, "memorias_raw.csv"), index=False
+    )
+    resumo_parar_limpo(df_stop).to_csv(
+        os.path.join(destino, "parar_limpo.csv"), index=False
+    )
+    resumo_memorias(df_mem).to_csv(
+        os.path.join(destino, "memorias.csv"), index=False
+    )
+    resumo_eficiencia(df_principal).to_csv(
+        os.path.join(destino, "eficiencia.csv"), index=False
+    )
+    montar_figura_extra(df_stop, df_mem, df_principal).savefig(
+        os.path.join(destino, "graficos_extra.png")
+    )
