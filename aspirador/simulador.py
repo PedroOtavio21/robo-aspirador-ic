@@ -12,7 +12,7 @@ class Medida:
     total: float = 0.0
     historico: list = field(default_factory=list)
 
-    def passo(self, quadrados_limpos: int, movimentos: int) -> None:
+    def passo(self, celulas_limpas: int, movimentos: int) -> None:
         raise NotImplementedError
 
     def media(self, n: int) -> float:
@@ -23,8 +23,8 @@ class MedidaA(Medida):
     def __init__(self) -> None:
         super().__init__(nome="Medida A")
 
-    def passo(self, quadrados_limpos: int, movimentos: int) -> None:
-        self.total += quadrados_limpos
+    def passo(self, celulas_limpas: int, movimentos: int) -> None:
+        self.total += celulas_limpas
         self.historico.append(self.total)
 
 
@@ -33,9 +33,9 @@ class MedidaB(Medida):
         super().__init__(nome="Medida B")
         self.movimentos = 0
 
-    def passo(self, quadrados_limpos: int, movimentos: int) -> None:
+    def passo(self, celulas_limpas: int, movimentos: int) -> None:
         self.movimentos += movimentos
-        self.total += quadrados_limpos - movimentos
+        self.total += celulas_limpas - movimentos
         self.historico.append(self.total)
 
 
@@ -110,7 +110,7 @@ class Simulador:
 
         self.passos += 1
         self.acoes.append(acao.value)
-        limpos = self.ambiente.quadrados_limpos()
+        limpos = self.ambiente.limpas
         self.medida_a.passo(limpos, movimentos_delta)
         self.medida_b.passo(limpos, movimentos_delta)
         self.historico_limpos.append(self.ambiente.limpas)

@@ -41,9 +41,10 @@ docs/
 - **`agentes.py`** — o agente reativo simples e o baseado em modelos, além do
   estado interno (matriz 0–4) do segundo.
 - **`simulador.py`** — ciclo percepção → decisão → ação → medida, as duas
-  medidas de desempenho, o critério de parada (T fixo; opcionalmente encerrar
-  quando limpo) e o resultado consolidado, incluindo métricas de eficiência
-  (passos e movimentos até limpar, percentual de sujeira removida).
+  medidas de desempenho (contando apenas células limpas **pelo agente**), o
+  critério de parada (T fixo; opcionalmente encerrar quando limpo) e o resultado
+  consolidado, incluindo métricas de eficiência (passos e movimentos até limpar,
+  percentual de sujeira removida).
 - **`experimentos.py`** — geração de configurações, execução da bateria,
   tabelas agregadas e gráficos.
 - **`gui/`** — interface Tkinter opcional que consome o núcleo; permite

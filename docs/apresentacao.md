@@ -39,10 +39,10 @@ Em ambos os casos, as ações são aplicadas por `aspirador/ambiente.py`
 ### Critério de parada
 
 Nos experimentos, todos executam **exatamente T = 500 períodos**, o que torna a
-Medida A (soma dos quadrados limpos por período) comparável — a medida premia
-manter o ambiente limpo. Terminar ao limpar inverteria o ranking: o agente
-rápido acumularia poucos pontos e o agente que nunca limpa acumularia mais. Na
-GUI há a opção **"Parar quando limpo"** (desligada por padrão), com T como teto.
+Medida A (soma, por período, das células limpas **pelo robô**) comparável — a
+medida premia limpar cedo e manter limpo o que foi limpo. Terminar ao limpar
+mudaria a escala do ranking. Na GUI há a opção **"Parar quando limpo"**
+(desligada por padrão), com T como teto.
 
 ## 3. Resultados empíricos
 
@@ -50,8 +50,8 @@ Bateria: 40 configurações, 8 × 8, T = 500, reativo com 10 repetições.
 
 | Agente | Medida A (média ± desvio) | Medida B (média ± desvio) |
 |---|---:|---:|
-| Baseado em modelo | 28.436,05 ± 2.198,63 | 28.354,40 ± 2.198,06 |
-| Reativo simples | 25.403,03 ± 2.938,47 | 24.922,76 ± 2.935,98 |
+| Baseado em modelo | 10.161,05 ± 3.232,85 | 10.079,40 ± 3.226,68 |
+| Reativo simples | 7.128,04 ± 2.366,50 | 6.647,76 ± 2.372,96 |
 
 | Agente | Movimentos | Células limpas | Terminou limpo |
 |---|---:|---:|---:|
@@ -81,9 +81,10 @@ disponíveis**, **objetivo** e **medida de desempenho**.
   estado interno reduz o custo de exploração e evita movimentos improdutivos.
 - O reativo é *localmente* sensato (aspira quando há sujeira) e racional **dado
   o seu programa**, mas não consegue coordenar a cobertura sem memória.
-- A Medida A premia **manter** o ambiente limpo ao longo do tempo; a Medida B
-  acrescenta a **eficiência** de deslocamento. Sob outra medida (energia, tempo,
-  aspiração desnecessária), a avaliação poderia mudar.
+- A Medida A soma as células **limpas pelo robô** a cada período (células que já
+  iniciam limpas não contam); a Medida B acrescenta a **eficiência** de
+  deslocamento. Sob outra medida (energia, tempo, aspiração desnecessária), a
+  avaliação poderia mudar.
 - Conclusão adequada: o resultado vale **para estas medidas e para este
   ambiente**; não se deve concluir que o reativo seja "burro", mas sim limitado
   pelas informações que seu programa permite usar.

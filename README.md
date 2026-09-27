@@ -3,8 +3,16 @@
 Simulador do mundo do aspirador de pó com dois agentes — **reativo simples** e
 **baseado em modelos** — comparados sob duas medidas de desempenho:
 
-- **Medida A:** +1 ponto por quadrado limpo em cada período (acumulado).
-- **Medida B:** +1 ponto por quadrado limpo e −1 ponto por movimento.
+- **Medida A:** +1 ponto por quadrado **limpo pelo robô** em cada período
+  (acumulado).
+- **Medida B:** +1 ponto por quadrado **limpo pelo robô** e −1 ponto por
+  movimento.
+
+> **Interpretação adotada:** "quadrado limpo" = célula cuja sujeira foi removida
+> pelo agente. Células que já iniciam limpas **não pontuam**. O `GUIA.md` usa a
+> expressão "cada quadrado limpo" sem restringir a origem; adotamos esta leitura
+> mais estrita (a alternativa contaria também as células pré-limpias, inflando a
+> medida sem refletir trabalho do agente).
 
 Stack: Python 3.11+, com execução por **CLI** e por **interface gráfica
 (Tkinter)**. Dependências: `matplotlib`, `pandas`, `pytest` (+ `python3-tk`
@@ -134,8 +142,8 @@ Bateria: 40 configurações, 8 × 8, T = 500, reativo com 10 repetições.
 
 | Agente | Medida A | Medida B | Movimentos | Limpou tudo |
 |---|---:|---:|---:|---:|
-| Baseado em modelo | **28.436,05 ± 2.198,63** | **28.354,40 ± 2.198,06** | 81,7 | 100 % |
-| Reativo simples | 25.403,03 ± 2.938,47 | 24.922,76 ± 2.935,98 | 480,3 | 24,2 % |
+| Baseado em modelo | **10.161,05 ± 3.232,85** | **10.079,40 ± 3.226,68** | 81,7 | 100 % |
+| Reativo simples | 7.128,04 ± 2.366,50 | 6.647,76 ± 2.372,96 | 480,3 | 24,2 % |
 
 Eficiência (médias por execução):
 

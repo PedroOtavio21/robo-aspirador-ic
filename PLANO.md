@@ -25,8 +25,8 @@ sensores operam estritamente de forma local.
 | Estado interno + regras condição-ação | `aspirador/agentes.py` |
 | Ambiente determinístico e parcialmente observável | `aspirador/ambiente.py` |
 | Sensores estritamente locais | `aspirador/ambiente.py` (`Sensor`) |
-| Medida 1: +1 por quadrado limpo por período | `aspirador/simulador.py` (`MedidaA`) |
-| Medida 2: +1 limpo e −1 por movimento | `aspirador/simulador.py` (`MedidaB`) |
+| Medida 1: +1 por quadrado limpo **pelo robô** por período | `aspirador/simulador.py` (`MedidaA`) |
+| Medida 2: +1 limpo **pelo robô** e −1 por movimento | `aspirador/simulador.py` (`MedidaB`) |
 | Fixar tamanho do ambiente | `aspirador/experimentos.py` (`TAMANHO_FIXO = 8`) |
 | Múltiplas configurações (sujeira/obstáculos/posição) | `aspirador/experimentos.py` |
 | Pontuação por configuração | `resultados/tables/por_config.csv` |
@@ -53,6 +53,9 @@ sensores operam estritamente de forma local.
   permite outros valores manualmente).
 - **Critério de parada:** T fixo nos experimentos (comparabilidade da Medida A);
   "parar quando limpo" apenas como opção da GUI, com T como teto.
+- **Interpretação de "quadrado limpo":** célula cuja sujeira foi removida pelo
+  agente; células que já iniciam limpas não pontuam (leitura mais estrita do que
+  o texto literal do `GUIA.md`, registrada em `README.md`).
 - **GUI opcional** — só a interface importa Tkinter; o restante roda sem ela.
 
 Fora de escopo: empacotamento publicável, execução paralela.

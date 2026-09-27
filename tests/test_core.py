@@ -207,3 +207,26 @@ def test_ambiente_sem_sujeira():
     assert resultado.passos_ate_limpo == 0
     assert resultado.movimentos_ate_limpo == 0
     assert resultado.percentual_limpo == 100.0
+    assert resultado.score_a == 0.0
+
+
+def test_pontua_apenas_o_que_foi_limpado_pelo_robo():
+    resultado = Simulador(
+        Ambiente(3, 3, 0.0, 0.0, seed=0),
+        AgenteBaseadoEmModelo(seed=0),
+        T=10,
+    ).rodar()
+    assert resultado.limpo is True
+    assert resultado.score_a == 0.0
+    assert resultado.score_b == -resultado.movimentos
+
+
+def test_score_a_soma_apenas_celulas_limpas_pelo_robo():
+    resultado = Simulador(
+        Ambiente(4, 4, 0.5, 0.0, seed=3),
+        AgenteBaseadoEmModelo(seed=3),
+        T=120,
+    ).rodar()
+    assert resultado.score_a == sum(resultado.historico_limpos)
+    assert resultado.score_b == resultado.score_a - resultado.movimentos
+    assert resultado.score_a <= resultado.passos * resultado.total_sujos

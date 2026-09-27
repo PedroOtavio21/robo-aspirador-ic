@@ -19,6 +19,8 @@
 - Toda saída experimental é reproduzível por seed.
 - Critério de parada: **T fixo** nos experimentos (para comparar a Medida A);
   "parar quando limpo" é apenas uma opção da GUI, com T como teto.
+- "Quadrado limpo" nas medidas = célula cuja sujeira foi **removida pelo
+  agente**; células que já iniciam limpas não pontuam.
 
 ## Comandos
 
