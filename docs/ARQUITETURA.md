@@ -7,7 +7,7 @@ Derivada de `PLANO.md` e de `GUIA.md`.
 ```
 README.md            # execução, estrutura e resultados
 AGENTS.md            # regras do projeto
-main.py              # atalho da GUI: python main.py
+main.py              # atalho da GUI: uv run python main.py
 aspirador/
   __init__.py
   ambiente.py        # Ambiente, Config, Acao, Percepcao, Sensor, aplicar()
@@ -21,7 +21,7 @@ aspirador/
     widget_grade.py      # canvas: ambiente e mapa interno 0-4
     widget_resultados.py # aba com gráficos da bateria (A/B)
     widget_extra.py      # aba com métricas complementares
-    __main__.py          # python -m aspirador.gui
+    __main__.py          # uv run python -m aspirador.gui
 tests/
   test_core.py
 resultados/

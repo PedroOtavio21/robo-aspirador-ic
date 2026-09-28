@@ -12,7 +12,7 @@
 
 - Python 3.11+.
 - Núcleo em `aspirador/`: `ambiente.py`, `agentes.py`, `simulador.py`.
-- Experimentos em `aspirador/experimentos.py`; CLI em `python -m aspirador`.
+- Experimentos em `aspirador/experimentos.py`; CLI em `uv run python -m aspirador`.
 - Interface gráfica opcional em `aspirador/gui/` (Tkinter; requer `python3-tk`).
   O núcleo não importa a GUI, então o pacote continua utilizável sem Tkinter.
 - Sem comentários no código, salvo quando solicitado.
@@ -27,11 +27,13 @@
 
 ## Comandos
 
+Instalação do uv (Windows/Linux/Mac) e detalhes de `uv sync` em `README.md`.
+
 ```bash
-pip install -r requirements.txt
-pytest -q
-python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
-python -m aspirador --extra   # métricas complementares em resultados/extra/
-sudo apt install python3-tk   # pré-requisito da interface
-python main.py                # interface gráfica
+uv sync
+uv run pytest -q
+uv run python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
+uv run python -m aspirador --extra   # métricas complementares em resultados/extra/
+sudo apt install python3-tk           # pré-requisito da interface
+uv run python main.py                 # interface gráfica
 ```

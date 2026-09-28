@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 import os
 import random
+from datetime import datetime
 
 import pandas as pd
 from matplotlib.figure import Figure
 
 from .agentes import AGENTES, AgenteBaseadoEmModelo, AgenteReativoSimples
 from .ambiente import Ambiente, Config
-from .simulador import Simulador
+from .simulador import Resultado, Simulador
 
 TAMANHO_FIXO = 8
 T_PADRAO = 500
@@ -22,6 +23,9 @@ DIR_RAW = "resultados/raw"
 DIR_TABELAS = "resultados/tables"
 DIR_CHARTS = "resultados/charts"
 DIR_EXTRA = "resultados/extra"
+DIR_GUI = "resultados/gui"
+DIR_GUI_CHARTS = os.path.join(DIR_GUI, "charts")
+ARQ_GUI_EXECUCOES = os.path.join(DIR_GUI, "execucoes.csv")
 
 CORES = {"Reativo simples": "#d98b3a", "Baseado em modelo": "#2b6cb0"}
 CORES_MEMORIA = {
@@ -107,6 +111,7 @@ def rodar_configuracao(
                     "posicao_inicial": f"{config.posicao_inicial[0]},"
                     f"{config.posicao_inicial[1]}",
                     "mapa_inicial": mapa_inicial,
+                    "origem": "cli",
                     "agente": nome,
                     "memoria": memoria,
                     "repeticao": repeticao,
@@ -291,6 +296,78 @@ def resumo_memorias(df: pd.DataFrame) -> pd.DataFrame:
         )
         .reset_index()
     )
+
+
+def _figura_execucao_gui(resultado: Resultado, agente: str, memoria: str | None) -> Figure:
+    figura = Figure(figsize=(6, 4), dpi=100)
+    ax = figura.add_subplot(111)
+    passos = range(1, len(resultado.historico_a) + 1)
+    ax.plot(passos, resultado.historico_a, label="Medida A")
+    ax.plot(passos, resultado.historico_b, label="Medida B")
+    titulo = f"Evolução da execução (GUI) — {agente}"
+    if memoria:
+        titulo += f" ({memoria})"
+    ax.set_title(titulo)
+    ax.set_xlabel("período")
+    ax.set_ylabel("pontuação")
+    ax.legend(fontsize=8)
+    ax.grid(alpha=0.3)
+    figura.tight_layout()
+    return figura
+
+
+def salvar_execucao_gui(
+    resultado: Resultado,
+    agente: str,
+    memoria: str | None,
+    seed: int,
+    largura: int,
+    altura: int,
+    densidade_sujeira: float,
+    densidade_obstaculo: float,
+    posicao_inicial: tuple[int, int],
+    T: int,
+    parar_quando_limpo: bool,
+) -> str:
+    os.makedirs(DIR_GUI, exist_ok=True)
+    os.makedirs(DIR_GUI_CHARTS, exist_ok=True)
+
+    identificador = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    caminho_grafico = os.path.join(DIR_GUI_CHARTS, f"{identificador}.png")
+    _figura_execucao_gui(resultado, agente, memoria).savefig(caminho_grafico)
+
+    linha = {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "origem": "gui",
+        "agente": agente,
+        "memoria": memoria or "",
+        "seed": seed,
+        "largura": largura,
+        "altura": altura,
+        "densidade_sujeira": densidade_sujeira,
+        "densidade_obstaculo": densidade_obstaculo,
+        "posicao_inicial": f"{posicao_inicial[0]},{posicao_inicial[1]}",
+        "T": T,
+        "parar_quando_limpo": parar_quando_limpo,
+        "score_a": resultado.score_a,
+        "score_b": resultado.score_b,
+        "movimentos": resultado.movimentos,
+        "passos": resultado.passos,
+        "celulas_limpas": resultado.celulas_limpas,
+        "total_sujos": resultado.total_sujos,
+        "limpo": resultado.limpo,
+        "passos_ate_limpo": resultado.passos_ate_limpo,
+        "movimentos_ate_limpo": resultado.movimentos_ate_limpo,
+        "percentual_limpo": resultado.percentual_limpo,
+        "grafico": caminho_grafico,
+    }
+    pd.DataFrame([linha]).to_csv(
+        ARQ_GUI_EXECUCOES,
+        mode="a",
+        header=not os.path.exists(ARQ_GUI_EXECUCOES),
+        index=False,
+    )
+    return caminho_grafico
 
 
 def salvar_saidas(
