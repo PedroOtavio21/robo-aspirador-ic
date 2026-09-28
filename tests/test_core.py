@@ -132,7 +132,7 @@ def test_modelo_limpa_tudo_e_para():
     assert resultado.celulas_limpas == resultado.total_sujos
 
 
-def test_medida_a_soma_limpos():
+def test_medida_a_soma_celulas_limpas_uma_vez():
     medida = MedidaA()
     medida.passo(5, 1)
     medida.passo(6, 0)
@@ -142,8 +142,8 @@ def test_medida_a_soma_limpos():
 def test_medida_b_penaliza_movimentos():
     medida = MedidaB()
     medida.passo(5, 2)
-    medida.passo(5, 1)
-    assert medida.total == 7
+    medida.passo(0, 1)
+    assert medida.total == 2
     assert medida.movimentos == 3
 
 
@@ -155,7 +155,7 @@ def test_simulador_consistente_e_reprodutivel():
         Ambiente(8, 8, 0.4, 0.15, seed=99), AgenteReativoSimples(seed=99), T=200
     ).rodar()
 
-    assert a.score_b == a.score_a - a.movimentos
+    assert a.score_b == a.celulas_limpas - a.movimentos
     assert a.passos == 200
     assert a.acoes == b.acoes
     assert a.score_a == b.score_a
@@ -222,15 +222,27 @@ def test_pontua_apenas_o_que_foi_limpado_pelo_robo():
     assert resultado.score_b == -resultado.movimentos
 
 
+def test_medida_b_conta_celula_limpa_uma_vez():
+    resultado = Simulador(
+        Ambiente(4, 4, densidade_sujeira=0.5, densidade_obstaculo=0.0, seed=3),
+        AgenteBaseadoEmModelo(seed=3),
+        T=50,
+    ).rodar()
+
+    assert resultado.score_b == resultado.celulas_limpas - resultado.movimentos
+    assert resultado.score_a == resultado.celulas_limpas
+    assert resultado.score_b == resultado.score_a - resultado.movimentos
+
+
 def test_score_a_soma_apenas_celulas_limpas_pelo_robo():
     resultado = Simulador(
         Ambiente(4, 4, 0.5, 0.0, seed=3),
         AgenteBaseadoEmModelo(seed=3),
         T=120,
     ).rodar()
-    assert resultado.score_a == sum(resultado.historico_limpos)
-    assert resultado.score_b == resultado.score_a - resultado.movimentos
-    assert resultado.score_a <= resultado.passos * resultado.total_sujos
+    assert resultado.score_a == resultado.celulas_limpas
+    assert resultado.score_b == resultado.celulas_limpas - resultado.movimentos
+    assert resultado.score_a <= resultado.total_sujos
 
 
 def test_memoria_posicao_nao_tem_mapa():
@@ -352,3 +364,30 @@ def test_resumo_parar_limpo():
     )
     resumo = resumo_parar_limpo(pd.DataFrame(linhas))
     assert set(resumo["agente"]) == {"Reativo simples", "Baseado em modelo"}
+
+
+def test_figuras_da_bateria_e_extra():
+    import pandas as pd
+
+    from aspirador.experimentos import (
+        gerar_configuracoes,
+        montar_figura,
+        montar_figura_extra,
+        rodar_configuracao,
+        rodar_memorias,
+    )
+
+    config = gerar_configuracoes(1, seed=8, tamanho=4)[0]
+    linhas, historico = rodar_configuracao(config, repeticoes_reativo=1, T=20)
+    linhas_stop, _ = rodar_configuracao(
+        config, repeticoes_reativo=1, T=20, parar_quando_limpo=True
+    )
+    df_res = pd.DataFrame(linhas)
+    df_stop = pd.DataFrame(linhas_stop)
+    df_mem = pd.DataFrame(rodar_memorias(config, T=20))
+
+    figura = montar_figura(df_res, pd.DataFrame(historico))
+    assert len(figura.axes) == 4
+
+    figura_extra = montar_figura_extra(df_stop, df_mem, df_res)
+    assert len(figura_extra.axes) >= 4

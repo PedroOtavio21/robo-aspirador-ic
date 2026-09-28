@@ -86,6 +86,7 @@ class Simulador:
         self.percepcao = self.sensor.perceber(self.ambiente, bateu=False)
         self.medida_a = MedidaA()
         self.medida_b = MedidaB()
+        self._limpos_anterior = 0
         self.passos = 0
         self.acoes: list[str] = []
         self.historico_limpos: list[int] = []
@@ -111,8 +112,10 @@ class Simulador:
         self.passos += 1
         self.acoes.append(acao.value)
         limpos = self.ambiente.limpas
-        self.medida_a.passo(limpos, movimentos_delta)
-        self.medida_b.passo(limpos, movimentos_delta)
+        novos_limpos = limpos - self._limpos_anterior
+        self.medida_a.passo(novos_limpos, movimentos_delta)
+        self.medida_b.passo(novos_limpos, movimentos_delta)
+        self._limpos_anterior = limpos
         self.historico_limpos.append(self.ambiente.limpas)
 
         if self.passos_ate_limpo is None and self.ambiente.limpo():

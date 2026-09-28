@@ -26,8 +26,10 @@ tests/
   test_core.py
 resultados/
   tables/            # por_config.csv, medias_globais.csv, eficiencia.csv
-  charts/            # graficos.png, barras_medidas.png, curva_limpas.png, boxplot.png
-  extra/             # parar_limpo, memorias, eficiencia, graficos_extra (com --extra)
+  charts/            # graficos.png + metrica_a/b, comparativo_metricas/modelos,
+                     # curva_limpas, boxplot
+  extra/             # parar_limpo, memorias, eficiencia, graficos_extra,
+                     # comparativo_memorias, normal_vs_break, eficiencia (--extra)
 docs/
   GUIA.md            # fonte de verdade imutável
   PLANO.md           # escopo, requisitos e fases
@@ -47,7 +49,9 @@ docs/
   medidas de desempenho (contando apenas células limpas **pelo agente**), o
   critério de parada (T fixo; opcionalmente encerrar quando limpo) e o resultado
   consolidado, incluindo métricas de eficiência (passos e movimentos até limpar,
-  percentual de sujeira removida).
+  percentual de sujeira removida). A **Medida A** soma +1 por célula limpa pelo
+  robô (**uma única vez**); a **Medida B** conta o mesmo +1 por célula limpa e
+  subtrai −1 por movimento (eficiência de deslocamento).
 - **`experimentos.py`** — geração de configurações, execução da bateria
   principal (A/B) e da bateria extra (`--extra`: parar quando limpo, modos de
   memória, eficiência), tabelas agregadas e gráficos.

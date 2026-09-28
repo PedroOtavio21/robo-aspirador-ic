@@ -24,9 +24,21 @@ DIR_CHARTS = "resultados/charts"
 DIR_EXTRA = "resultados/extra"
 
 CORES = {"Reativo simples": "#d98b3a", "Baseado em modelo": "#2b6cb0"}
+CORES_MEMORIA = {
+    "mapa": "#2b6cb0",
+    "posicao": "#d98b3a",
+    "hibrida": "#2f855a",
+}
+CORES_MODO = {"T fixo": "#2b6cb0", "Parar quando limpo": "#d98b3a"}
+ROTULOS_MEMORIA = {
+    "mapa": "Mapa",
+    "posicao": "Último movimento",
+    "hibrida": "Híbrida",
+}
+ROTULOS_METRICA = {"score_a": "Medida A", "score_b": "Medida B"}
 MEDIDAS = {
-    "score_a": "Medida A (+1/quadrado limpo por período)",
-    "score_b": "Medida B (+1 limpo, -1 movimento)",
+    "score_a": "Medida A (+1 por célula limpa pelo robô)",
+    "score_b": "Medida B (eficiência: +1/célula limpa, −1/movimento)",
 }
 
 
@@ -310,14 +322,30 @@ def _resumo_por_config(df: pd.DataFrame, metrica: str) -> pd.DataFrame:
     return por_config.groupby("agente")[metrica].agg(["mean", "std"]).fillna(0.0)
 
 
+def _rotular_barras(ax, fmt: str = "{:.0f}") -> None:
+    for container in ax.containers:
+        try:
+            ax.bar_label(container, fmt=fmt, fontsize=8, padding=2)
+        except (AttributeError, TypeError):
+            continue
+
+
+def _estilizar(ax, titulo: str, ylabel: str | None = None) -> None:
+    ax.set_title(titulo, fontsize=11, fontweight="bold")
+    if ylabel:
+        ax.set_ylabel(ylabel, fontsize=9)
+    ax.grid(axis="y", alpha=0.3)
+    ax.set_axisbelow(True)
+    ax.tick_params(labelsize=9)
+
+
 def plotar_barras(df: pd.DataFrame, metrica: str, ax, titulo: str) -> None:
     resumo = _resumo_por_config(df, metrica)
     resumo = resumo.reindex(list(AGENTES)).dropna(how="all")
     cores = [CORES.get(a, "#888888") for a in resumo.index]
     ax.bar(resumo.index, resumo["mean"], yerr=resumo["std"], capsize=5, color=cores)
-    ax.set_title(titulo)
-    ax.set_ylabel("pontuação")
-    ax.grid(axis="y", alpha=0.3)
+    _rotular_barras(ax, "{:,.0f}")
+    _estilizar(ax, titulo, "pontuação")
 
 
 def plotar_curva(df_historico: pd.DataFrame | None, ax) -> None:
@@ -328,23 +356,119 @@ def plotar_curva(df_historico: pd.DataFrame | None, ax) -> None:
     df["fracao"] = df["celulas_limpas"] / df["total_sujos"].replace(0, 1)
     curva = df.groupby(["agente", "passo"])["fracao"].mean().reset_index()
     for agente, grupo in curva.groupby("agente"):
-        ax.plot(grupo["passo"], grupo["fracao"], label=agente, color=CORES.get(agente))
-    ax.set_title("Fração de células limpas × tempo")
-    ax.set_xlabel("período")
-    ax.set_ylabel("fração limpa (0-1)")
+        ax.plot(
+            grupo["passo"],
+            grupo["fracao"],
+            label=agente,
+            color=CORES.get(agente),
+            linewidth=2,
+        )
     ax.set_ylim(0, 1.05)
+    ax.set_xlabel("período", fontsize=9)
+    _estilizar(ax, "Fração de células limpas × tempo", "fração limpa (0-1)")
     ax.legend(fontsize=8)
-    ax.grid(alpha=0.3)
 
 
 def plotar_boxplot(df: pd.DataFrame, ax, metrica: str = "score_b") -> None:
     por_config = df.groupby(["config_id", "agente"])[metrica].mean().reset_index()
     ordem = list(AGENTES)
     dados = [por_config[por_config["agente"] == a][metrica].values for a in ordem]
-    ax.boxplot(dados, tick_labels=ordem, showmeans=True)
-    ax.set_title(f"Distribuição de {MEDIDAS.get(metrica, metrica)}")
-    ax.set_ylabel("pontuação")
-    ax.grid(axis="y", alpha=0.3)
+    caixas = ax.boxplot(dados, tick_labels=ordem, showmeans=True, patch_artist=True)
+    for caixa, agente in zip(caixas["boxes"], ordem):
+        caixa.set_facecolor(CORES.get(agente, "#888888"))
+        caixa.set_alpha(0.55)
+    _estilizar(ax, f"Distribuição de {MEDIDAS.get(metrica, metrica)}", "pontuação")
+    ax.tick_params(axis="x", labelsize=8)
+
+
+def plotar_metricas_agrupadas(df: pd.DataFrame, ax) -> None:
+    resumo = _resumo_por_config(df, "score_a")[["mean"]].rename(
+        columns={"mean": "score_a"}
+    )
+    resumo["score_b"] = _resumo_por_config(df, "score_b")["mean"]
+    resumo = resumo.reindex(list(AGENTES)).dropna(how="all")
+    posicoes = list(range(len(resumo)))
+    largura = 0.38
+    ax.bar(
+        [p - largura / 2 for p in posicoes],
+        resumo["score_a"],
+        width=largura,
+        label="Medida A",
+        color="#2b6cb0",
+    )
+    ax.bar(
+        [p + largura / 2 for p in posicoes],
+        resumo["score_b"],
+        width=largura,
+        label="Medida B (eficiência)",
+        color="#d98b3a",
+    )
+    _rotular_barras(ax, "{:,.0f}")
+    ax.set_xticks(posicoes)
+    ax.set_xticklabels(resumo.index, fontsize=8)
+    _estilizar(ax, "Comparação entre métricas — A × B", "pontuação")
+    ax.legend(fontsize=8)
+
+
+def plotar_comparativo_metricas(df: pd.DataFrame, figura: Figure) -> None:
+    figura.clear()
+    plotar_barras(
+        df, "score_a", figura.add_subplot(1, 2, 1),
+        "Medida A — média por configuração",
+    )
+    plotar_barras(
+        df, "score_b", figura.add_subplot(1, 2, 2),
+        "Medida B — eficiência (maior é melhor)",
+    )
+    figura.tight_layout()
+
+
+def plotar_comparativo_modelos(df: pd.DataFrame, figura: Figure) -> None:
+    figura.clear()
+    agentes = list(AGENTES)
+    eficiencia = resumo_eficiencia(df).set_index("agente").reindex(agentes)
+
+    plotar_barras(
+        df, "score_a", figura.add_subplot(1, 3, 1),
+        "Medida A — desempenho",
+    )
+    plotar_barras(
+        df, "score_b", figura.add_subplot(1, 3, 2),
+        "Medida B — eficiência",
+    )
+
+    ax3 = figura.add_subplot(1, 3, 3)
+    barras = ax3.bar(
+        agentes,
+        eficiencia["movimentos"],
+        color=[CORES.get(a, "#888888") for a in agentes],
+    )
+    ax3.bar_label(barras, fmt="{:,.0f}", fontsize=8, padding=2)
+    _estilizar(ax3, "Esforço e limpeza total", "movimentos")
+    ax3.tick_params(axis="x", labelsize=8)
+    ax3b = ax3.twinx()
+    ax3b.plot(
+        agentes,
+        eficiencia["limpo"] * 100,
+        "o--",
+        color="#2f855a",
+        linewidth=2,
+        label="% limpou tudo",
+    )
+    for agente, valor in zip(agentes, eficiencia["limpo"] * 100):
+        ax3b.annotate(
+            f"{valor:.0f}%",
+            (agente, valor),
+            textcoords="offset points",
+            xytext=(0, 6),
+            ha="center",
+            fontsize=8,
+            color="#2f855a",
+        )
+    ax3b.set_ylabel("% limpou tudo", fontsize=9, color="#2f855a")
+    ax3b.set_ylim(0, 112)
+    ax3b.tick_params(labelsize=9, colors="#2f855a")
+    figura.tight_layout()
 
 
 def montar_figura(
@@ -353,7 +477,7 @@ def montar_figura(
     figura: Figure | None = None,
 ) -> Figure:
     if figura is None:
-        figura = Figure(figsize=(10, 7), dpi=100)
+        figura = Figure(figsize=(11, 8), dpi=100)
     figura.clear()
     plotar_barras(
         df_resultados, "score_a", figura.add_subplot(2, 2, 1),
@@ -363,10 +487,15 @@ def montar_figura(
         df_resultados, "score_b", figura.add_subplot(2, 2, 2),
         "Medida B — média por configuração",
     )
-    plotar_curva(df_historico, figura.add_subplot(2, 2, 3))
-    plotar_boxplot(df_resultados, figura.add_subplot(2, 2, 4))
+    plotar_metricas_agrupadas(df_resultados, figura.add_subplot(2, 2, 3))
+    plotar_curva(df_historico, figura.add_subplot(2, 2, 4))
     figura.tight_layout()
     return figura
+
+
+def _salvar_figura(figura: Figure, destino: str, nome: str, dpi: int = 150) -> None:
+    figura.tight_layout()
+    figura.savefig(os.path.join(destino, nome), dpi=dpi, bbox_inches="tight")
 
 
 def salvar_graficos(
@@ -376,61 +505,133 @@ def salvar_graficos(
 ) -> None:
     os.makedirs(destino, exist_ok=True)
 
-    montar_figura(df_resultados, df_historico).savefig(
-        os.path.join(destino, "graficos.png")
+    _salvar_figura(
+        montar_figura(df_resultados, df_historico), destino, "graficos.png", dpi=140
     )
 
-    fig_barras = Figure(figsize=(9, 4), dpi=100)
+    fig_a = Figure(figsize=(6, 4.5), dpi=100)
     plotar_barras(
-        df_resultados, "score_a", fig_barras.add_subplot(1, 2, 1),
+        df_resultados, "score_a", fig_a.add_subplot(1, 1, 1),
         "Medida A — média por configuração",
     )
+    _salvar_figura(fig_a, destino, "metrica_a.png")
+
+    fig_b = Figure(figsize=(6, 4.5), dpi=100)
     plotar_barras(
-        df_resultados, "score_b", fig_barras.add_subplot(1, 2, 2),
+        df_resultados, "score_b", fig_b.add_subplot(1, 1, 1),
         "Medida B — média por configuração",
     )
-    fig_barras.tight_layout()
-    fig_barras.savefig(os.path.join(destino, "barras_medidas.png"))
+    _salvar_figura(fig_b, destino, "metrica_b.png")
 
-    fig_curva = Figure(figsize=(6, 4), dpi=100)
+    fig_metricas = Figure(figsize=(11, 4.5), dpi=100)
+    plotar_comparativo_metricas(df_resultados, fig_metricas)
+    _salvar_figura(fig_metricas, destino, "comparativo_metricas.png")
+
+    fig_modelos = Figure(figsize=(14, 4.5), dpi=100)
+    plotar_comparativo_modelos(df_resultados, fig_modelos)
+    _salvar_figura(fig_modelos, destino, "comparativo_modelos.png")
+
+    fig_curva = Figure(figsize=(6.5, 4.5), dpi=100)
     plotar_curva(df_historico, fig_curva.add_subplot(1, 1, 1))
-    fig_curva.tight_layout()
-    fig_curva.savefig(os.path.join(destino, "curva_limpas.png"))
+    _salvar_figura(fig_curva, destino, "curva_limpas.png")
 
-    fig_box = Figure(figsize=(5, 4), dpi=100)
+    fig_box = Figure(figsize=(6, 4.5), dpi=100)
     plotar_boxplot(df_resultados, fig_box.add_subplot(1, 1, 1))
-    fig_box.tight_layout()
-    fig_box.savefig(os.path.join(destino, "boxplot.png"))
+    _salvar_figura(fig_box, destino, "boxplot.png")
+
+
+def _resumo_metrica_por_agente(df: pd.DataFrame, metrica: str) -> pd.DataFrame:
+    por_config = (
+        df.groupby(["config_id", "agente"])[metrica].mean().reset_index()
+    )
+    return por_config.groupby("agente")[metrica].agg(["mean", "std"]).fillna(0.0)
 
 
 def plotar_memorias(df_mem: pd.DataFrame, ax, metrica: str = "score_a") -> None:
     resumo = resumo_memorias(df_mem)
-    ax.bar(resumo["memoria"], resumo[metrica], color=CORES.get("Baseado em modelo"))
-    ax.set_title("Modelo por memória — " + MEDIDAS.get(metrica, metrica))
-    ax.set_ylabel("pontuação")
-    ax.grid(axis="y", alpha=0.3)
+    ordem = [m for m in ("mapa", "posicao", "hibrida") if m in set(resumo["memoria"])]
+    resumo = resumo.set_index("memoria").reindex(ordem)
+    cores = [CORES_MEMORIA.get(m, "#888888") for m in resumo.index]
+    barras = ax.bar(
+        [ROTULOS_MEMORIA.get(m, m) for m in resumo.index],
+        resumo[metrica].fillna(0.0),
+        color=cores,
+    )
+    ax.bar_label(barras, fmt="{:,.0f}", fontsize=8, padding=2)
+    sufixo = "Medida A" if metrica == "score_a" else "Medida B (eficiência)"
+    _estilizar(ax, f"Tipos de memória — {sufixo}", "pontuação")
+    ax.tick_params(axis="x", labelsize=8)
+
+
+def plotar_comparativo_memorias(df_mem: pd.DataFrame, figura: Figure) -> None:
+    figura.clear()
+    plotar_memorias(df_mem, figura.add_subplot(1, 2, 1), "score_a")
+    plotar_memorias(df_mem, figura.add_subplot(1, 2, 2), "score_b")
+    figura.tight_layout()
+
+
+def plotar_normal_vs_break(
+    df_normal: pd.DataFrame,
+    df_stop: pd.DataFrame,
+    ax,
+    metrica: str = "score_a",
+) -> None:
+    normal = _resumo_metrica_por_agente(df_normal, metrica).reindex(list(AGENTES))
+    parado = _resumo_metrica_por_agente(df_stop, metrica).reindex(list(AGENTES))
+    posicoes = list(range(len(normal)))
+    largura = 0.38
+    ax.bar(
+        [p - largura / 2 for p in posicoes],
+        normal["mean"],
+        width=largura,
+        yerr=normal["std"],
+        capsize=4,
+        label="T fixo (tempo normal)",
+        color=CORES_MODO["T fixo"],
+    )
+    ax.bar(
+        [p + largura / 2 for p in posicoes],
+        parado["mean"],
+        width=largura,
+        yerr=parado["std"],
+        capsize=4,
+        label="Parar quando limpo",
+        color=CORES_MODO["Parar quando limpo"],
+    )
+    _rotular_barras(ax, "{:,.0f}")
+    ax.set_xticks(posicoes)
+    ax.set_xticklabels(normal.index, fontsize=8)
+    _estilizar(
+        ax,
+        f"Tempo normal × parar após limpar — {ROTULOS_METRICA.get(metrica, metrica)}",
+        "pontuação",
+    )
+    ax.legend(fontsize=8)
 
 
 def plotar_eficiencia_extra(df: pd.DataFrame, ax) -> None:
-    resumo = resumo_eficiencia(df)
+    resumo = resumo_eficiencia(df).set_index("agente").reindex(list(AGENTES))
     posicoes = list(range(len(resumo)))
+    largura = 0.38
     ax.bar(
-        [p - 0.2 for p in posicoes],
+        [p - largura / 2 for p in posicoes],
         resumo["movimentos"],
-        width=0.4,
+        width=largura,
         label="movimentos",
+        color="#2b6cb0",
     )
     ax.bar(
-        [p + 0.2 for p in posicoes],
+        [p + largura / 2 for p in posicoes],
         resumo["passos_ate_limpo"].fillna(0.0),
-        width=0.4,
+        width=largura,
         label="passos até limpar",
+        color="#d98b3a",
     )
+    _rotular_barras(ax, "{:,.0f}")
     ax.set_xticks(posicoes)
-    ax.set_xticklabels(resumo["agente"], fontsize=8)
-    ax.set_title("Eficiência por agente")
+    ax.set_xticklabels(resumo.index, fontsize=8)
+    _estilizar(ax, "Eficiência por agente", "quantidade")
     ax.legend(fontsize=8)
-    ax.grid(axis="y", alpha=0.3)
 
 
 def montar_figura_extra(
@@ -440,17 +641,15 @@ def montar_figura_extra(
     figura: Figure | None = None,
 ) -> Figure:
     if figura is None:
-        figura = Figure(figsize=(10, 7), dpi=100)
+        figura = Figure(figsize=(11, 8), dpi=100)
     figura.clear()
-    plotar_barras(
-        df_stop, "score_a", figura.add_subplot(2, 2, 1),
-        "Medida A — parar quando limpo",
+    plotar_memorias(df_mem, figura.add_subplot(2, 2, 1), "score_a")
+    plotar_normal_vs_break(
+        df_principal, df_stop, figura.add_subplot(2, 2, 2), "score_a"
     )
-    plotar_barras(
-        df_stop, "score_b", figura.add_subplot(2, 2, 2),
-        "Medida B — parar quando limpo",
+    plotar_normal_vs_break(
+        df_principal, df_stop, figura.add_subplot(2, 2, 3), "score_b"
     )
-    plotar_memorias(df_mem, figura.add_subplot(2, 2, 3), "score_a")
     plotar_eficiencia_extra(df_principal, figura.add_subplot(2, 2, 4))
     figura.tight_layout()
     return figura
@@ -479,6 +678,27 @@ def salvar_extra(
     resumo_eficiencia(df_principal).to_csv(
         os.path.join(destino, "eficiencia.csv"), index=False
     )
-    montar_figura_extra(df_stop, df_mem, df_principal).savefig(
-        os.path.join(destino, "graficos_extra.png")
+
+    _salvar_figura(
+        montar_figura_extra(df_stop, df_mem, df_principal),
+        destino,
+        "graficos_extra.png",
+        dpi=140,
     )
+
+    fig_mem = Figure(figsize=(11, 4.5), dpi=100)
+    plotar_comparativo_memorias(df_mem, fig_mem)
+    _salvar_figura(fig_mem, destino, "comparativo_memorias.png")
+
+    fig_break = Figure(figsize=(11, 4.5), dpi=100)
+    plotar_normal_vs_break(
+        df_principal, df_stop, fig_break.add_subplot(1, 2, 1), "score_a"
+    )
+    plotar_normal_vs_break(
+        df_principal, df_stop, fig_break.add_subplot(1, 2, 2), "score_b"
+    )
+    _salvar_figura(fig_break, destino, "normal_vs_break.png")
+
+    fig_ef = Figure(figsize=(7, 4.5), dpi=100)
+    plotar_eficiencia_extra(df_principal, fig_ef.add_subplot(1, 1, 1))
+    _salvar_figura(fig_ef, destino, "eficiencia.png")

@@ -3,16 +3,22 @@
 Simulador do mundo do aspirador de pó com dois agentes — **reativo simples** e
 **baseado em modelos** — comparados sob duas medidas de desempenho:
 
-- **Medida A:** +1 ponto por quadrado **limpo pelo robô** em cada período
-  (acumulado).
-- **Medida B:** +1 ponto por quadrado **limpo pelo robô** e −1 ponto por
-  movimento.
+- **Medida A:** +1 ponto por quadrado **limpo pelo robô** (cada célula conta
+  **uma única vez**) — recompensa pela limpeza realizada.
+- **Medida B:** +1 ponto por quadrado **limpo pelo robô** (cada célula conta
+  **uma única vez**) e −1 ponto por movimento — medida de **eficiência de
+  deslocamento**, tipicamente negativa.
 
 > **Interpretação adotada:** "quadrado limpo" = célula cuja sujeira foi removida
 > pelo agente. Células que já iniciam limpas **não pontuam**. O `docs/GUIA.md` usa
 > a expressão "cada quadrado limpo" sem restringir a origem; adotamos esta
 > leitura mais estrita (a alternativa contaria também as células pré-limpias,
-> inflando a medida sem refletir trabalho do agente).
+> inflando a medida sem refletir trabalho do agente). Em **ambas** as medidas o
+> bônus é contado **uma única vez por célula**; interpretamos a expressão "em
+> cada período" do Critério 1 como a **avaliação feita a cada período sobre as
+> células limpas naquele passo** (evento de limpeza), e não como o estado "está
+> limpo" somado repetidamente. Assim A e B medem a mesma limpeza e diferem apenas
+> pela penalidade de movimento.
 
 Stack: Python 3.11+, com execução por **CLI** e por **interface gráfica
 (Tkinter)**. Dependências: `matplotlib`, `pandas`, `pytest` (+ `python3-tk`
@@ -47,11 +53,15 @@ A bateria gera:
 - `resultados/raw/` — resultados brutos e histórico por período;
 - `resultados/tables/` — `por_config.csv`, `medias_globais.csv` e
   `eficiencia.csv`;
-- `resultados/charts/` — `graficos.png`, `barras_medidas.png`,
-  `curva_limpas.png`, `boxplot.png`;
+- `resultados/charts/` — visão consolidada `graficos.png` e gráficos
+  individuais em alta resolução: `metrica_a.png`, `metrica_b.png`,
+  `comparativo_metricas.png`, `comparativo_modelos.png`, `curva_limpas.png`,
+  `boxplot.png`;
 - `resultados/configuracoes.json` — configurações usadas;
-- `resultados/extra/` (com `--extra`) — métricas complementares: bateria com
-  "parar quando limpo", comparação de modos de memória e eficiência.
+- `resultados/extra/` (com `--extra`) — métricas complementares: consolidado
+  `graficos_extra.png` e individuais `comparativo_memorias.png`
+  (mapa × último movimento × híbrida), `normal_vs_break.png`
+  (T fixo × parar após limpar) e `eficiencia.png`.
 
 ## Interface gráfica
 
@@ -151,11 +161,12 @@ bateria principal — use deliberadamente.
 ## Critério de parada
 
 Nos **experimentos** todos os agentes executam **exatamente T períodos** (T = 500
-por padrão). Isso é necessário para comparar a **Medida A**, que é uma soma ao
-longo do tempo: fixar T torna a recompensa de manutenção (permanecer limpo)
-comparável entre agentes. Se o episódio terminasse ao limpar, o agente rápido
-acumularia poucos pontos e o agente que nunca termina acumularia mais — o
-ranking poderia se inverter.
+por padrão). Isso garante igualdade de **orçamento de movimentos** e de
+oportunidades de limpeza, condição necessária para comparar a **Medida B**
+(eficiência): se o episódio terminasse ao limpar, o agente que termina cedo
+faria menos movimentos e teria uma B artificialmente melhor. Fixar T mantém a
+comparação justa entre agentes. (A **Medida A**, contada uma vez por célula, não
+cresce com T, mas a igualdade de condições continua valendo para B.)
 
 Na **GUI** existe a opção **"Parar quando limpo"** (desligada por padrão), útil
 para observar o episódio terminar naturalmente; T continua como teto de
@@ -169,10 +180,10 @@ limpo** e **percentual de sujeira removida** (`resultados/tables/eficiencia.csv`
 
 Bateria: 40 configurações, 8 × 8, T = 500, reativo com 10 repetições.
 
-| Agente | Medida A | Medida B | Movimentos | Limpou tudo |
+| Agente | Medida A | Medida B (eficiência) | Movimentos | Limpou tudo |
 |---|---:|---:|---:|---:|
-| Baseado em modelo | **10.161,05 ± 3.232,85** | **10.079,40 ± 3.226,68** | 81,7 | 100 % |
-| Reativo simples | 7.128,04 ± 2.366,50 | 6.647,76 ± 2.372,96 | 480,3 | 24,2 % |
+| Baseado em modelo | **21,92 ± 7,19** | **−59,72 ± 5,71** | 81,7 | 100 % |
+| Reativo simples | 19,73 ± 6,51 | −460,55 ± 13,02 | 480,3 | 24,2 % |
 
 Eficiência (médias por execução):
 
