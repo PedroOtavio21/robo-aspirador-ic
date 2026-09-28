@@ -3,14 +3,13 @@
 ## Fonte de verdade
 
 - `docs/GUIA.md` é **imutável**. Nunca edite, renomeie, mova ou reformate esse arquivo.
-- `docs/PLANO.md`, `docs/ARQUITETURA.md`, o código (`aspirador/`), os testes e a
+- `docs/DESIGN.md`, o código (`aspirador/`), os testes e a
   documentação final devem **derivar e obedecer** ao `docs/GUIA.md`.
 - Se houver conflito entre qualquer artefato e o `docs/GUIA.md`, ele prevalece.
-- `project-document.md` é o enunciado original da disciplina e também não deve ser alterado.
 
 ## Convenções
 
-- Python 3.11+.
+- Python 3.12+.
 - Núcleo em `aspirador/`: `ambiente.py`, `agentes.py`, `simulador.py`.
 - Experimentos em `aspirador/experimentos.py`; CLI em `uv run python -m aspirador`.
 - Interface gráfica opcional em `aspirador/gui/` (Tkinter; requer `python3-tk`).

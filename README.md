@@ -20,7 +20,7 @@ Simulador do mundo do aspirador de pó com dois agentes — **reativo simples** 
 > limpo" somado repetidamente. Assim A e B medem a mesma limpeza e diferem apenas
 > pela penalidade de movimento.
 
-Stack: Python 3.11+, com execução por **CLI** e por **interface gráfica
+Stack: Python 3.12+, com execução por **CLI** e por **interface gráfica
 (Tkinter)**. Dependências: `matplotlib`, `pandas`, `pytest` (+ `python3-tk`
 como pacote de sistema para a interface).
 
@@ -29,9 +29,7 @@ como pacote de sistema para a interface).
 | Arquivo | Papel |
 |---|---|
 | `docs/GUIA.md` | **Fonte de verdade imutável.** Não editar. |
-| `docs/PLANO.md` | Escopo, requisitos e fases (deriva do guia). |
-| `docs/ARQUITETURA.md` | Módulos, contratos e fluxo. |
-| `project-document.md` | Enunciado original da disciplina. |
+| `docs/DESIGN.md` | Escopo, requisitos, decisões, estrutura, contratos e fluxo (deriva do guia). |
 
 Integridade do guia: `sha256(docs/GUIA.md) = 13ee570fbe224882070e9c2c59f5f0f33db327de24d1f558d4731062591b7c5e`.
 
@@ -139,9 +137,9 @@ aspirador/
     widget_resultados.py  aba com gráficos da bateria (A/B)
     widget_extra.py       aba com métricas complementares
     __main__.py           entrada da GUI
-tests/test_core.py
+tests/test_core.py, tests/test_experimentos.py
 resultados/         raw, tables, charts, extra, gui (gerados)
-docs/               GUIA.md, PLANO.md, ARQUITETURA.md
+docs/               GUIA.md, DESIGN.md
 ```
 
 ## Contrato
@@ -220,6 +218,35 @@ Eficiência (médias por execução):
 | Reativo simples | 376,1* | 357,2* | 90,0 % |
 
 \* média apenas entre as execuções em que o reativo terminou a limpeza (24,2 %).
+
+## Discussão crítica (racionalidade)
+
+A racionalidade de um agente depende de quatro fatores: as **informações** que
+ele consegue perceber, as **ações** de que dispõe, o **objetivo** e a **medida
+de desempenho** usada para julgá-lo. A discussão abaixo vale, portanto, para
+este ambiente determinístico e parcialmente observável e para as Medidas A e B.
+
+- **Sob ambas as medidas, o agente baseado em modelos é o mais racional** porque
+  o estado interno (matriz 0–4) reduz o custo de exploração: ele lembra onde já
+  passou, marca obstáculos e dirige a busca por sujeira conhecida e por
+  fronteiras desconhecidas. O efeito aparece nos resultados: limpa tudo em
+  **100 %** das configurações com ~**82 movimentos**, contra **24,2 %** e
+  ~**480 movimentos** do reativo simples.
+- **O reativo simples é localmente sensato** (aspira sempre que a célula atual
+  está suja) e, portanto, racional *dado o seu programa*. Sem memória, porém,
+  não coordena a cobertura do ambiente: revisita células, colide repetidamente e
+  não explora de forma dirigida. Seu desempenho é limitado pelas informações que
+  o programa permite usar, e não por uma "irracionalidade" intrínseca.
+- **A medida de desempenho importa.** A Medida A premia apenas a limpeza
+  realizada (+1 por célula limpa pelo robô, uma vez); a Medida B desconta cada
+  movimento, medindo eficiência de deslocamento. O modelo domina as duas
+  (A = 21,92 vs 19,73; B = −59,72 vs −460,55), reforçando que o estado interno
+  torna a política mais econômica.
+- **Sob outra medida o veredito poderia mudar.** Se o custo fosse energia, tempo
+  ou aspiração desnecessária, a comparação teria outro contorno. Conclui-se que,
+  **para estas medidas e este ambiente**, o agente baseado em modelos é mais
+  racional — não que o reativo seja "ruim", mas que é limitado pelo que sua
+  arquitetura permite perceber e lembrar.
 
 ## Reprodutibilidade
 
