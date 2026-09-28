@@ -252,7 +252,8 @@ este ambiente determinístico e parcialmente observável e para as Medidas A e B
 
 - Sementes e configurações em `resultados/configuracoes.json`.
 - Mesma `--seed` ⇒ mesma bateria; o ambiente é determinístico.
-- Recomenda-se registrar o *hash* do commit usado nos experimentos.
+- Resultados de referência gerados no commit `cfb9a3f` (`resultados/tables/`,
+  `resultados/charts/` e `resultados/extra/`).
 
 ## Regras de contagem
 
