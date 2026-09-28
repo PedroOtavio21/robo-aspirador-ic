@@ -25,7 +25,7 @@ config_id,agente,memoria,score_a,score_b,movimentos,passos,celulas_limpas,total_
 7,Baseado em modelo,hibrida,25.0,-450.0,475,500,25,25,True,133.0,108.0,100.0
 8,Baseado em modelo,mapa,24.0,-64.0,88,500,24,24,True,96.0,72.0,100.0
 8,Baseado em modelo,posicao,24.0,-452.0,476,500,24,24,True,491.0,467.0,100.0
-8,Baseado em modelo,hibrida,23.0,-454.0,477,500,23,24,False,,,95.83333333333331
+8,Baseado em modelo,hibrida,23.0,-454.0,477,500,23,24,False,,,95.83333333333333
 9,Baseado em modelo,mapa,7.0,-63.0,70,500,7,7,True,64.0,57.0,100.0
 9,Baseado em modelo,posicao,7.0,-486.0,493,500,7,7,True,224.0,217.0,100.0
 9,Baseado em modelo,hibrida,7.0,-486.0,493,500,7,7,True,166.0,159.0,100.0
@@ -54,7 +54,7 @@ config_id,agente,memoria,score_a,score_b,movimentos,passos,celulas_limpas,total_
 17,Baseado em modelo,posicao,16.0,-468.0,484,500,16,16,True,177.0,161.0,100.0
 17,Baseado em modelo,hibrida,16.0,-468.0,484,500,16,16,True,130.0,114.0,100.0
 18,Baseado em modelo,mapa,28.0,-55.0,83,500,28,28,True,95.0,67.0,100.0
-18,Baseado em modelo,posicao,27.0,-446.0,473,500,27,28,False,,,96.42857142857144
+18,Baseado em modelo,posicao,27.0,-446.0,473,500,27,28,False,,,96.42857142857143
 18,Baseado em modelo,hibrida,28.0,-444.0,472,500,28,28,True,128.0,100.0,100.0
 19,Baseado em modelo,mapa,15.0,-58.0,73,500,15,15,True,82.0,67.0,100.0
 19,Baseado em modelo,posicao,15.0,-470.0,485,500,15,15,True,433.0,418.0,100.0
@@ -69,8 +69,8 @@ config_id,agente,memoria,score_a,score_b,movimentos,passos,celulas_limpas,total_
 22,Baseado em modelo,posicao,26.0,-448.0,474,500,26,32,False,,,81.25
 22,Baseado em modelo,hibrida,32.0,-436.0,468,500,32,32,True,324.0,292.0,100.0
 23,Baseado em modelo,mapa,15.0,-57.0,72,500,15,15,True,65.0,50.0,100.0
-23,Baseado em modelo,posicao,14.0,-472.0,486,500,14,15,False,,,93.33333333333331
-23,Baseado em modelo,hibrida,14.0,-472.0,486,500,14,15,False,,,93.33333333333331
+23,Baseado em modelo,posicao,14.0,-472.0,486,500,14,15,False,,,93.33333333333333
+23,Baseado em modelo,hibrida,14.0,-472.0,486,500,14,15,False,,,93.33333333333333
 24,Baseado em modelo,mapa,24.0,-52.0,76,500,24,24,True,84.0,60.0,100.0
 24,Baseado em modelo,posicao,24.0,-452.0,476,500,24,24,True,405.0,381.0,100.0
 24,Baseado em modelo,hibrida,24.0,-452.0,476,500,24,24,True,168.0,144.0,100.0
@@ -90,7 +90,7 @@ config_id,agente,memoria,score_a,score_b,movimentos,passos,celulas_limpas,total_
 29,Baseado em modelo,posicao,23.0,-454.0,477,500,23,23,True,424.0,401.0,100.0
 29,Baseado em modelo,hibrida,23.0,-454.0,477,500,23,23,True,140.0,117.0,100.0
 30,Baseado em modelo,mapa,36.0,-53.0,89,500,36,36,True,92.0,56.0,100.0
-30,Baseado em modelo,posicao,35.0,-430.0,465,500,35,36,False,,,97.22222222222224
+30,Baseado em modelo,posicao,35.0,-430.0,465,500,35,36,False,,,97.22222222222223
 30,Baseado em modelo,hibrida,36.0,-428.0,464,500,36,36,True,276.0,240.0,100.0
 31,Baseado em modelo,mapa,19.0,-58.0,77,500,19,19,True,84.0,65.0,100.0
 31,Baseado em modelo,posicao,19.0,-462.0,481,500,19,19,True,369.0,350.0,100.0
