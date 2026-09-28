@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+from pathlib import Path
 
 from ..agentes import BARREIRA, NADA, PASSADO, PASSADO_LIMPO
 from ..agentes import SUJO as SUJO_INTERNO
@@ -42,6 +43,19 @@ class GradeCanvas(tk.Canvas):
         )
         self.tamanho_celula = tamanho_celula
         self._t = tamanho_celula
+        self.imagem_robo = self._carregar_imagem_robo()
+
+    def _carregar_imagem_robo(self) -> tk.PhotoImage | None:
+        caminho_imagem = Path(__file__).resolve().parents[2] / "img" / "robo.png"
+        try:
+            imagem_original = tk.PhotoImage(file=str(caminho_imagem))
+        except tk.TclError:
+            return None
+
+        fator_x = max(1, imagem_original.width() // self.tamanho_celula)
+        fator_y = max(1, imagem_original.height() // self.tamanho_celula)
+        fator = max(fator_x, fator_y)
+        return imagem_original.subsample(fator, fator)
 
     def _tamanho(self, largura: int, altura: int) -> int:
         return max(4, min(self.tamanho_celula, MAX_PX // max(largura, altura, 1)))
@@ -103,13 +117,21 @@ class GradeCanvas(tk.Canvas):
 
     def _agente(self, x: int, y: int) -> None:
         t = self._t
-        x0, y0 = x * t, y * t
-        margem = t * 0.18
-        self.create_oval(
-            x0 + margem,
-            y0 + margem,
-            x0 + t - margem,
-            y0 + t - margem,
-            fill=COR_AGENTE,
-            outline="",
+        if self.imagem_robo is None:
+            x0, y0 = x * t, y * t
+            margem = t * 0.18
+            self.create_oval(
+                x0 + margem,
+                y0 + margem,
+                x0 + t - margem,
+                y0 + t - margem,
+                fill=COR_AGENTE,
+                outline="",
+            )
+            return
+        self.create_image(
+            x * t + t / 2,
+            y * t + t / 2,
+            image=self.imagem_robo,
+            anchor="center",
         )

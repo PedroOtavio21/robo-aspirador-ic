@@ -5,6 +5,7 @@ from tkinter import messagebox, ttk
 
 from ..agentes import AGENTES, AgenteBaseadoEmModelo
 from ..ambiente import Ambiente
+from ..experimentos import salvar_execucao_gui
 from ..simulador import Simulador
 from .widget_extra import WidgetExtra
 from .widget_grade import GradeCanvas
@@ -31,6 +32,9 @@ class JanelaPrincipal(tk.Tk):
         self._tocando = False
         self._after_id: str | None = None
         self._intervalo = INTERVALO_PADRAO
+        self._agente_atual = ""
+        self._memoria_atual: str | None = None
+        self._posicao_inicial_atual = (0, 0)
 
         self._montar()
         self.protocol("WM_DELETE_WINDOW", self._fechar)
@@ -72,7 +76,7 @@ class JanelaPrincipal(tk.Tk):
         )
         self.combo_agente.current(0)
         self.combo_agente.grid(row=0, column=1, sticky="w", padx=(0, 12), pady=3)
-        self.combo_agente.bind("<<ComboboxSelected>>", self._atualizar_memoria)
+        self.combo_agente.bind("<<ComboboxSelected>>", self._ao_mudar_agente)
 
         ttk.Label(caixa, text="Memória:").grid(
             row=0, column=4, sticky="e", padx=(6, 2), pady=3
@@ -82,6 +86,9 @@ class JanelaPrincipal(tk.Tk):
         )
         self.combo_memoria.current(0)
         self.combo_memoria.grid(row=0, column=5, sticky="w", padx=(0, 12), pady=3)
+        self.combo_memoria.bind("<<ComboboxSelected>>", lambda _: self.novo())
+
+        self._atualizar_memoria()
 
         self.entrada_seed = self._par(caixa, 0, 2, "Seed:", 0)
         self.entrada_largura = self._par(caixa, 1, 0, "Largura:", LARGURA_PADRAO)
@@ -107,6 +114,9 @@ class JanelaPrincipal(tk.Tk):
         ttk.Button(barra, text="Passo", command=self.passo).pack(side="left", padx=2)
         self.botao_play = ttk.Button(barra, text="Play", command=self.alternar_play)
         self.botao_play.pack(side="left", padx=2)
+        ttk.Button(
+            barra, text="Salvar execução", command=self._salvar_execucao
+        ).pack(side="left", padx=2)
 
         self.var_parar_limpo = tk.BooleanVar(value=False)
         ttk.Checkbutton(
@@ -146,6 +156,10 @@ class JanelaPrincipal(tk.Tk):
         moldura_dir.pack(side="left", fill="both", expand=True)
         self.canvas_mapa = GradeCanvas(moldura_dir)
         self.canvas_mapa.pack()
+
+    def _ao_mudar_agente(self, _evento=None) -> None:
+        self._atualizar_memoria()
+        self.novo()
 
     def _atualizar_memoria(self, _evento=None) -> None:
         if self.combo_agente.get() == AgenteBaseadoEmModelo.nome:
@@ -213,8 +227,10 @@ class JanelaPrincipal(tk.Tk):
 
         classe = AGENTES[self.combo_agente.get()]
         if classe is AgenteBaseadoEmModelo:
-            agente = classe(seed=seed, memoria=MEMORIAS[self.combo_memoria.get()])
+            memoria = MEMORIAS[self.combo_memoria.get()]
+            agente = classe(seed=seed, memoria=memoria)
         else:
+            memoria = None
             agente = classe(seed=seed)
         self.simulador = Simulador(
             ambiente,
@@ -222,6 +238,9 @@ class JanelaPrincipal(tk.Tk):
             T=T,
             parar_quando_limpo=self.var_parar_limpo.get(),
         )
+        self._agente_atual = self.combo_agente.get()
+        self._memoria_atual = memoria
+        self._posicao_inicial_atual = ambiente.posicao
         self._atualizar()
 
     def passo(self) -> None:
@@ -294,6 +313,27 @@ class JanelaPrincipal(tk.Tk):
     def _fechar(self) -> None:
         self.parar_play()
         self.destroy()
+
+    def _salvar_execucao(self) -> None:
+        if self.simulador is None:
+            return
+        ambiente = self.simulador.ambiente
+        salvar_execucao_gui(
+            self.simulador.resultado(),
+            agente=self._agente_atual,
+            memoria=self._memoria_atual,
+            seed=ambiente.seed,
+            largura=ambiente.largura,
+            altura=ambiente.altura,
+            densidade_sujeira=ambiente.densidade_sujeira,
+            densidade_obstaculo=ambiente.densidade_obstaculo,
+            posicao_inicial=self._posicao_inicial_atual,
+            T=self.simulador.T,
+            parar_quando_limpo=self.simulador.parar_quando_limpo,
+        )
+        messagebox.showinfo(
+            "Salvar execução", "Resultado salvo em resultados/gui/execucoes.csv"
+        )
 
 
 def main() -> None:

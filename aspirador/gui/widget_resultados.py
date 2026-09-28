@@ -38,7 +38,7 @@ class WidgetResultados(ttk.Frame):
                 0.5,
                 0.5,
                 "Nenhum resultado encontrado.\n\n"
-                "Rode:  python -m aspirador",
+                "Rode:  uv run python -m aspirador",
                 ha="center",
                 va="center",
                 fontsize=12,

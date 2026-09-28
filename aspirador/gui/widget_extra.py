@@ -52,7 +52,7 @@ class WidgetExtra(ttk.Frame):
         ):
             self._mensagem(
                 "Nenhum dado extra encontrado.\n\n"
-                "Rode:  python -m aspirador --extra"
+                "Rode:  uv run python -m aspirador --extra"
             )
             return
 

@@ -35,17 +35,33 @@ como pacote de sistema para a interface).
 
 Integridade do guia: `sha256(docs/GUIA.md) = 13ee570fbe224882070e9c2c59f5f0f33db327de24d1f558d4731062591b7c5e`.
 
-## Como executar
+## Instalar o uv
+
+O projeto usa [uv](https://docs.astral.sh/uv/) para gerenciar o ambiente virtual
+e as dependências (`pyproject.toml` + `uv.lock`).
+
+```powershell
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+# Linux / macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-pytest -q
-python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
-python -m aspirador --memoria posicao   # opcional; padrão da bateria: mapa
-python -m aspirador --extra             # gera também resultados/extra/
+## Como executar
+
+`uv sync` cria o `.venv` automaticamente (a partir do `uv.lock`) e instala as
+dependências — não é preciso criar o venv nem rodar `pip install` manualmente.
+
+```bash
+uv sync
+
+uv run pytest -q
+uv run python -m aspirador --configs 40 --repeticoes 10 --T 500 --seed 2024
+uv run python -m aspirador --memoria posicao   # opcional; padrão da bateria: mapa
+uv run python -m aspirador --extra             # gera também resultados/extra/
 ```
 
 A bateria gera:
@@ -74,9 +90,9 @@ sudo apt install python3-tk
 Abrir a GUI (qualquer uma das formas):
 
 ```bash
-python main.py
+uv run python main.py
 # ou
-python -m aspirador.gui
+uv run python -m aspirador.gui
 ```
 
 Na aba **Simulação** o usuário configura manualmente: **agente** (reativo
@@ -90,22 +106,33 @@ e o placar mostra passo, Medida A, Medida B, movimentos e status. Dois canvas
 exibem o **ambiente real** e o **mapa interno 0–4**. A aba **Resultados** embute
 os gráficos da bateria (lidos de `resultados/raw/`). A aba **Extra** mostra as
 métricas complementares de `resultados/extra/` (parar quando limpo, modos de
-memória e eficiência); se faltarem, rode `python -m aspirador --extra`. Há ainda
+memória e eficiência); se faltarem, rode `uv run python -m aspirador --extra`. Há ainda
 a opção **"Parar quando limpo"**: com ela marcada, o episódio encerra assim que o
 ambiente fica sem sujeira (T permanece como teto de segurança).
+
+O botão **"Salvar execução"** grava o resultado da simulação atual (parâmetros,
+Medida A/B, movimentos, etc.) em `resultados/gui/execucoes.csv`, adicionando uma
+linha por clique, e também gera uma imagem PNG com a evolução de Medida A/B ao
+longo dos períodos em `resultados/gui/charts/` (nome com timestamp; o caminho
+fica registrado na coluna `grafico` do CSV). Esses arquivos ficam separados da
+bateria de experimentos da CLI (`resultados/raw/`, `resultados/tables/`,
+`resultados/charts/`, `resultados/extra/`) para não misturar execuções
+manuais/exploratórias com a bateria reprodutível por seed; ambos os CSVs também
+têm a coluna `origem` (`gui` ou `cli`) para diferenciar a fonte caso sejam
+analisados em conjunto.
 
 ## Estrutura
 
 ```
 README.md           documentação principal
 AGENTS.md           regras do projeto
-main.py             atalho da GUI (python main.py)
+main.py             atalho da GUI (uv run python main.py)
 aspirador/
   ambiente.py       Ambiente, Config, Acao, Sensor/Percepcao, aplicar()
   agentes.py        ReativoSimples, BaseadoEmModelo, EstadoInterno (0-4)
   simulador.py      MedidaA, MedidaB, Resultado, Simulador
   experimentos.py   configs, bateria, tabelas e graficos
-  __main__.py       CLI (python -m aspirador)
+  __main__.py       CLI (uv run python -m aspirador)
   gui/
     janela.py             janela, controles e laço de simulação
     widget_grade.py       canvas do ambiente e do mapa interno
@@ -113,7 +140,7 @@ aspirador/
     widget_extra.py       aba com métricas complementares
     __main__.py           entrada da GUI
 tests/test_core.py
-resultados/         raw, tables, charts, extra (gerados)
+resultados/         raw, tables, charts, extra, gui (gerados)
 docs/               GUIA.md, PLANO.md, ARQUITETURA.md
 ```
 
